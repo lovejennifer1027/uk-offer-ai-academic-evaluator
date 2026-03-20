@@ -518,6 +518,72 @@ textarea {
   backdrop-filter: blur(18px);
 }
 
+.hero-stage {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  border-radius: 40px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(248, 250, 254, 0.8)),
+    radial-gradient(circle at top left, rgba(160, 189, 229, 0.22), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(141, 139, 198, 0.14), transparent 28%);
+  box-shadow: 0 28px 72px rgba(67, 84, 120, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.hero-stage::before {
+  content: "";
+  position: absolute;
+  inset: auto -10% -35% auto;
+  width: 26rem;
+  height: 26rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(160, 189, 229, 0.18), transparent 62%);
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.hero-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.16), transparent 70%);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.modern-showcase {
+  position: relative;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(247, 249, 253, 0.76)),
+    radial-gradient(circle at top right, rgba(160, 189, 229, 0.18), transparent 34%);
+  box-shadow: 0 22px 54px rgba(67, 84, 120, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.modern-showcase::before {
+  content: "";
+  position: absolute;
+  inset: 1rem;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+
+.mini-floating-card {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 32px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(18px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -119,129 +119,132 @@ export default function HomePage() {
   return (
     <PageShell>
       <section className="hero-shell relative overflow-hidden pb-24 pt-14 md:pb-28 md:pt-20">
-        <div className="page-container grid gap-10 xl:grid-cols-[1.04fr_0.96fr] xl:items-center">
-          <div className="relative z-10">
-            <span className="eyebrow-pill text-sm font-semibold">{ORGANISATION_NAME}</span>
-            <h1 className="mt-7 max-w-5xl text-5xl leading-[1.02] text-[var(--navy)] md:text-6xl xl:text-7xl">
-              先别急着改论文，先让 AI 告诉你最可能丢分的地方。
-            </h1>
-            <p className="mt-7 max-w-3xl text-lg leading-9 text-[var(--muted)]">
-              {BRAND_NAME} 把论文初评、老师要求和正式报告整合成一条更像真实教育产品的工作流。你上传论文和评分标准后，系统会在几秒内返回更正式、更稳定、也更适合咨询场景展示的形成性评估结果。
-            </p>
+        <div className="page-container">
+          <div className="hero-stage px-7 py-8 md:px-10 md:py-10 xl:px-12 xl:py-12">
+            <div className="grid gap-10 xl:grid-cols-[1.02fr_0.98fr] xl:items-center">
+              <div className="relative z-10">
+                <span className="eyebrow-pill text-sm font-semibold">{ORGANISATION_NAME}</span>
+                <h1 className="mt-7 max-w-5xl text-5xl leading-[0.96] text-[var(--navy)] md:text-6xl xl:text-7xl">
+                  先别急着改论文，
+                  <br className="hidden xl:block" />
+                  先让 AI 告诉你最可能丢分的地方。
+                </h1>
+                <p className="mt-7 max-w-3xl text-lg leading-9 text-[var(--muted)]">
+                  {BRAND_NAME} 把论文初评、老师要求和正式报告整合成一条更像真实教育产品的工作流。你上传论文和评分标准后，系统会在几秒内返回更正式、更稳定、也更适合咨询场景展示的形成性评估结果。
+                </p>
 
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/evaluate" className="luxury-button text-sm">
-                立即开始评估
-              </Link>
-              <Link href="/history" className="luxury-button-muted text-sm">
-                查看历史报告
-              </Link>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3 text-sm">
-              <span className="quiet-badge">优先参考老师要求</span>
-              <span className="quiet-badge">支持 PDF / DOCX / TXT</span>
-              <span className="quiet-badge">AI 几秒内返回结果</span>
-            </div>
-
-            <div className="mt-11 grid gap-4 sm:grid-cols-3">
-              {heroMetrics.map((item) => (
-                <div key={item.value} className="story-metric">
-                  <div className="story-metric-value">{item.value}</div>
-                  <div className="story-metric-label">{item.label}</div>
+                <div className="mt-9 flex flex-wrap gap-3">
+                  <Link href="/evaluate" className="luxury-button text-sm">
+                    立即开始评估
+                  </Link>
+                  <Link href="/history" className="luxury-button-muted text-sm">
+                    查看历史报告
+                  </Link>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          <div className="story-shell relative z-10 overflow-hidden rounded-[44px] p-7 md:p-10">
-            <div className="absolute inset-x-0 top-0 h-36 bg-[linear-gradient(180deg,rgba(160,189,229,0.2),transparent)]" />
-            <div className="relative">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">实时评估预览</p>
-                  <h2 className="mt-4 text-2xl text-[var(--navy)] md:text-3xl">
-                    像真实 AI 工作台，而不是普通展示型首页。
-                  </h2>
+                <div className="mt-8 flex flex-wrap gap-3 text-sm">
+                  <span className="quiet-badge">优先参考老师要求</span>
+                  <span className="quiet-badge">支持 PDF / DOCX / TXT</span>
+                  <span className="quiet-badge">AI 几秒内返回结果</span>
                 </div>
-                <span className="signal-status">
-                  <span className="signal-dot is-live" />
-                  AI 正在评估
-                </span>
+
+                <div className="mt-11 grid gap-4 sm:grid-cols-3">
+                  {heroMetrics.map((item) => (
+                    <div key={item.value} className="story-metric">
+                      <div className="story-metric-value">{item.value}</div>
+                      <div className="story-metric-label">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-7 space-y-5">
-                <article className="rounded-[32px] border border-[rgba(59,76,107,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(240,245,252,0.96))] p-6 text-[var(--navy)] shadow-[0_18px_42px_rgba(67,84,120,0.08)]">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold">Essay draft uploaded</p>
-                    <span className="rounded-full border border-[rgba(59,76,107,0.08)] bg-white px-3 py-1 text-xs text-[var(--muted)]">
-                      2 min ago
-                    </span>
+              <div className="modern-showcase relative z-10 p-6 md:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">实时评估预览</p>
+                    <h2 className="mt-4 text-2xl text-[var(--navy)] md:text-3xl">
+                      更像真实 AI 工作台，而不是普通展示型首页。
+                    </h2>
                   </div>
-                  <p className="mt-4 text-lg leading-8 text-[var(--muted)]">
-                    论文正文与老师要求被放进同一个流程里，系统正在先识别结构、要求匹配和维度风险，再生成最终报告。
-                  </p>
-                </article>
+                  <span className="signal-status">
+                    <span className="signal-dot is-live" />
+                    AI 正在评估
+                  </span>
+                </div>
 
-                <div className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
-                  <article className="surface-inset rounded-[32px] p-6">
-                    <p className="text-sm font-semibold text-[var(--navy)]">分析进度</p>
-                    <div className="signal-bar mt-5">
-                      {heroAnalysisSignals.map((item) => (
-                        <div key={item.title} className="signal-row">
-                          <div>
-                            <strong>{item.title}</strong>
-                            <span className="mt-1 block">系统正在生成正式评估报告</span>
+                <div className="mt-6 space-y-5">
+                  <article className="mini-floating-card p-5 md:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-[var(--navy)]">Essay draft uploaded</p>
+                      <span className="rounded-full border border-[rgba(59,76,107,0.08)] bg-white/78 px-3 py-1 text-xs text-[var(--muted)]">
+                        2 min ago
+                      </span>
+                    </div>
+                    <p className="mt-4 text-lg leading-8 text-[var(--muted)]">
+                      论文正文与老师要求被放进同一个流程里，系统正在先识别结构、要求匹配和维度风险，再生成最终报告。
+                    </p>
+                  </article>
+
+                  <div className="grid gap-5 lg:grid-cols-[1.06fr_0.94fr]">
+                    <article className="surface-inset rounded-[30px] p-5 md:p-6">
+                      <p className="text-sm font-semibold text-[var(--navy)]">分析进度</p>
+                      <div className="signal-bar mt-5">
+                        {heroAnalysisSignals.map((item) => (
+                          <div key={item.title} className="signal-row">
+                            <div>
+                              <strong>{item.title}</strong>
+                              <span className="mt-1 block">系统正在生成正式评估报告</span>
+                            </div>
+                            <span className="signal-status">
+                              <span className={`signal-dot ${item.status === "进行中" ? "is-live" : ""}`} />
+                              {item.status}
+                            </span>
                           </div>
-                          <span className="signal-status">
-                            <span className={`signal-dot ${item.status === "进行中" ? "is-live" : ""}`} />
-                            {item.status}
-                          </span>
+                        ))}
+                      </div>
+                    </article>
+
+                    <article className="mini-floating-card p-5 md:p-6">
+                      <p className="text-sm font-semibold text-[var(--gold)]">预览评分</p>
+                      <p className="mt-4 text-5xl font-semibold text-[var(--navy)]">
+                        74
+                        <span className="ml-2 text-lg font-medium text-[var(--muted)]">/100</span>
+                      </p>
+                      <div className="soft-divider my-5" />
+                      <div className="space-y-3 text-sm text-[var(--muted)]">
+                        <div className="flex items-center justify-between gap-3">
+                          <span>结构</span>
+                          <strong className="text-[var(--navy)]">15 / 20</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <span>批判性思维</span>
+                          <strong className="text-[var(--navy)]">14 / 20</strong>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <span>引用规范</span>
+                          <strong className="text-[var(--navy)]">13 / 20</strong>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+
+                  <article className="mini-floating-card p-5 md:p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="text-sm font-semibold text-[var(--navy)]">最终输出</p>
+                      <span className="text-xs font-semibold text-[var(--gold)]">严格 JSON Schema</span>
+                    </div>
+                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                      {["总分 + 五维分数", "总体反馈 + 优点 / 不足", "修改建议 + 免责声明"].map((item) => (
+                        <div
+                          key={item}
+                          className="rounded-[22px] border border-[rgba(59,76,107,0.06)] bg-white/82 px-4 py-4 text-sm text-[var(--muted)]"
+                        >
+                          {item}
                         </div>
                       ))}
                     </div>
                   </article>
-
-                  <article className="rounded-[32px] border border-[var(--line)] bg-white/92 p-6 shadow-[0_16px_36px_rgba(67,84,120,0.06)]">
-                    <p className="text-sm font-semibold text-[var(--gold)]">预览评分</p>
-                    <p className="mt-4 text-5xl font-semibold text-[var(--navy)]">
-                      74
-                      <span className="ml-2 text-lg font-medium text-[var(--muted)]">/100</span>
-                    </p>
-                    <div className="soft-divider my-5" />
-                    <div className="space-y-3 text-sm text-[var(--muted)]">
-                      <div className="flex items-center justify-between gap-3">
-                        <span>结构</span>
-                        <strong className="text-[var(--navy)]">15 / 20</strong>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span>批判性思维</span>
-                        <strong className="text-[var(--navy)]">14 / 20</strong>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span>引用规范</span>
-                        <strong className="text-[var(--navy)]">13 / 20</strong>
-                      </div>
-                    </div>
-                  </article>
                 </div>
-
-                <article className="rounded-[32px] border border-[rgba(141,139,198,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.84),rgba(244,246,252,0.92))] p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-[var(--navy)]">最终输出</p>
-                    <span className="text-xs font-semibold text-[var(--gold)]">严格 JSON Schema</span>
-                  </div>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                    {["总分 + 五维分数", "总体反馈 + 优点 / 不足", "修改建议 + 免责声明"].map((item) => (
-                      <div
-                        key={item}
-                        className="rounded-[24px] border border-[rgba(59,76,107,0.06)] bg-white px-4 py-4 text-sm text-[var(--muted)]"
-                      >
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </article>
               </div>
             </div>
           </div>
@@ -256,7 +259,7 @@ export default function HomePage() {
               不是一堆卡片拼起来，而是先让客户立刻理解“现在发生了什么”。
             </h2>
             <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-              参考你给的页面方向，这一版首页会更强调“AI 正在帮你处理问题”的感觉。对家长、学生和咨询客户来说，这种结构比平铺介绍更容易信任，也更容易理解产品价值。
+              这次把首页做成更像现代 AI 产品着陆页的结构。对家长、学生和咨询客户来说，这种“先理解问题，再看到实时处理，再进入动作”的方式，会比传统咨询站更直观。
             </p>
           </article>
 
@@ -281,7 +284,7 @@ export default function HomePage() {
                 把输入、标准和反馈放进一条清楚的工作流。
               </h2>
               <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)]">
-                这一版把“马上开始使用”和“系统怎么一步步处理”都放到了更前面。用户不需要先读很久，先理解三步，然后直接进入评估。
+                页面现在会更像一个真实产品流程，而不是静态介绍。用户能先看到三步，再进入评估，不容易迷路。
               </p>
             </div>
 
@@ -304,7 +307,7 @@ export default function HomePage() {
             <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">评分维度</p>
             <h2 className="mt-4 text-3xl text-[var(--navy)] md:text-4xl">分数结构要清楚，报告也要一眼能读懂。</h2>
             <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-              我们保留正式、克制的学术语气，但页面本身更接近成熟产品界面：信息层次更简单，重点更靠前，报告逻辑也更像真实商业服务。
+              页面会继续维持正式语气，但视觉上更轻、更现代、更像成熟 SaaS，而不是传统教育说明页。
             </p>
           </div>
 
@@ -371,7 +374,7 @@ export default function HomePage() {
               <p className="mt-5 max-w-3xl text-sm leading-8 text-[var(--muted)]">{FORMATIVE_DISCLAIMER}</p>
             </div>
 
-            <div className="rounded-[34px] border border-[rgba(59,76,107,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(244,247,253,0.94))] p-7">
+            <div className="mini-floating-card p-7">
               <p className="text-sm font-semibold text-[var(--navy)]">现在就可以进入评估工作台</p>
               <p className="mt-3 text-sm leading-8 text-[var(--muted)]">
                 直接粘贴论文，或上传文件后开始。评估完成后，报告会同步进入历史记录页面，便于继续查看和演示。
