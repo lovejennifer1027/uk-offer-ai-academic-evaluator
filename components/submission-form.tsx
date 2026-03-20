@@ -119,9 +119,9 @@ export function SubmissionForm() {
   }
 
   return (
-    <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.22fr)_336px]">
+    <div className="grid items-start gap-10 xl:grid-cols-[minmax(0,1.14fr)_360px]">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <section className="card-surface relative overflow-hidden rounded-[38px] p-7 md:p-9">
+        <section className="story-shell relative overflow-hidden rounded-[38px] p-7 md:p-9">
           <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(160,189,229,0.16),transparent)]" />
           <div className="relative">
             <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
@@ -133,8 +133,8 @@ export function SubmissionForm() {
                 </p>
               </div>
 
-              <div className="rounded-[28px] border border-[rgba(59,76,107,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.8),rgba(245,247,252,0.92))] px-5 py-4 text-sm leading-7 text-[var(--muted)]">
-                建议在标题中写清课程或论文主题，这样历史记录页面会更整齐，也更适合后续回看和对外展示。
+              <div className="section-panel rounded-[28px] px-5 py-4 text-sm leading-7 text-[var(--muted)]">
+                建议在标题中写清课程或论文主题，这样历史记录页面会更整齐，也更适合后续回看和对外展示。这个区域更像评估单抬头，先把基本设置定清楚，后面整页读起来会更顺。
               </div>
             </div>
 
@@ -170,6 +170,21 @@ export function SubmissionForm() {
                   ))}
                 </select>
               </label>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="stat-tile">
+                <div className="stat-tile-label">标题</div>
+                <div className="stat-tile-value">决定历史记录辨识度</div>
+              </div>
+              <div className="stat-tile">
+                <div className="stat-tile-label">模板</div>
+                <div className="stat-tile-value">给出默认评分框架</div>
+              </div>
+              <div className="stat-tile">
+                <div className="stat-tile-label">老师要求</div>
+                <div className="stat-tile-value">提交后会优先覆盖默认模板</div>
+              </div>
             </div>
           </div>
         </section>
@@ -222,7 +237,7 @@ export function SubmissionForm() {
           </div>
         ) : null}
 
-        <section className="card-surface rounded-[38px] p-7 md:p-9">
+        <section className="story-shell rounded-[38px] p-7 md:p-9">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
               <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">评估前说明</p>
@@ -242,7 +257,7 @@ export function SubmissionForm() {
       </form>
 
       <aside className="space-y-6 xl:sticky xl:top-24">
-        <section className="card-surface rounded-[38px] p-7">
+        <section className="story-shell rounded-[38px] p-7">
           <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">当前模板</p>
           <h2 className="mt-3 text-xl text-[var(--navy)] md:text-2xl">{selectedRubric.label}</h2>
           <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{selectedRubric.description}</p>

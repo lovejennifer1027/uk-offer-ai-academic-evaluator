@@ -299,6 +299,125 @@ textarea {
   background: linear-gradient(90deg, transparent, rgba(59, 76, 107, 0.12), transparent);
 }
 
+.story-shell {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 253, 0.96)),
+    radial-gradient(circle at top right, rgba(160, 189, 229, 0.18), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(141, 139, 198, 0.12), transparent 28%);
+  box-shadow: 0 24px 60px rgba(67, 84, 120, 0.09);
+}
+
+.signal-bar {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.signal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0.95rem 1rem;
+}
+
+.signal-row strong {
+  color: var(--navy);
+  font-size: 0.95rem;
+}
+
+.signal-row span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.signal-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--navy);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.signal-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: rgba(141, 139, 198, 0.95);
+  box-shadow: 0 0 0 6px rgba(141, 139, 198, 0.12);
+}
+
+.signal-dot.is-live {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+.story-metric {
+  border-radius: 24px;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 1rem 1.05rem;
+}
+
+.story-metric-value {
+  color: var(--navy);
+  font-size: 1.55rem;
+  line-height: 1.8rem;
+  font-weight: 700;
+}
+
+.story-metric-label {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.35rem;
+}
+
+.process-band {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 248, 252, 0.94)),
+    radial-gradient(circle at top right, rgba(160, 189, 229, 0.16), transparent 34%);
+  box-shadow: 0 16px 38px rgba(67, 84, 120, 0.06);
+}
+
+.process-step-card {
+  position: relative;
+  border-radius: 30px;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1.6rem;
+  box-shadow: 0 12px 30px rgba(67, 84, 120, 0.05);
+}
+
+.process-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  background: rgba(141, 139, 198, 0.12);
+  color: var(--navy);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(141, 139, 198, 0.12);
+  }
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 10px rgba(141, 139, 198, 0.08);
+  }
+}
+
 .metric-chip {
   display: inline-flex;
   align-items: baseline;

@@ -30,7 +30,7 @@ export function UploadPanel({
   rows = 13
 }: UploadPanelProps) {
   return (
-    <section className="card-surface rounded-[38px] p-7 md:p-9">
+    <section className="story-shell rounded-[38px] p-7 md:p-9">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-3xl">
           <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">输入区域</p>
@@ -61,6 +61,29 @@ export function UploadPanel({
             <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
               支持格式：{ACCEPTED_UPLOAD_LABEL}。最大文件大小：{MAX_UPLOAD_SIZE_LABEL}。如果同时提供粘贴文本和上传文件，系统会优先使用粘贴文本。
             </p>
+
+            <div className="mt-5 grid gap-3">
+              <div className="signal-row">
+                <div>
+                  <strong>文本优先</strong>
+                  <span className="mt-1 block">如果粘贴了完整文本，会优先读取粘贴内容</span>
+                </div>
+                <span className="signal-status">
+                  <span className="signal-dot" />
+                  已启用
+                </span>
+              </div>
+              <div className="signal-row">
+                <div>
+                  <strong>文件解析</strong>
+                  <span className="mt-1 block">适合较长文档或已有排版的原始材料</span>
+                </div>
+                <span className="signal-status">
+                  <span className="signal-dot is-live" />
+                  待上传
+                </span>
+              </div>
+            </div>
 
             <label className="mt-6 flex min-h-[190px] cursor-pointer flex-col items-center justify-center rounded-[26px] border border-[rgba(59,76,107,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(244,247,253,0.94))] px-5 text-center transition hover:border-[rgba(141,139,198,0.24)]">
               <span className="text-sm font-semibold text-[var(--navy)]">选择文件并上传</span>
