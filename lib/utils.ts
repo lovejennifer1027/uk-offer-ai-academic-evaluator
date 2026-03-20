@@ -1,4 +1,9 @@
 import { type RubricScores } from "@/lib/types";
+import type { Locale } from "@/types/scholardesk";
+
+export function cn(...values: Array<string | false | null | undefined>) {
+  return values.filter(Boolean).join(" ");
+}
 
 export function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -21,6 +26,13 @@ export function truncateText(value: string, maxChars: number) {
 
 export function formatDate(date: string) {
   return new Intl.DateTimeFormat("zh-CN", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(new Date(date));
+}
+
+export function formatDateByLocale(date: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "zh-CN", {
     dateStyle: "medium",
     timeStyle: "short"
   }).format(new Date(date));

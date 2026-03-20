@@ -1,402 +1,221 @@
-# UK Offer AI Academic Evaluator
+# ScholarDesk AI
 
-Premium academic web application for UK Offer International Education.
+ScholarDesk AI is a bilingual academic productivity platform for compliant writing support, project knowledge bases, structured paper evaluation, requirement analysis, citation help, search review, and appeal evidence organization.
 
-This repository now contains two production-minded modules plus an optional accumulation foundation:
+This codebase is an original product build inspired by the premium SaaS information architecture of modern AI productivity sites, but it does not reuse third-party branding, text, images, logos, or trademarked claims.
 
-1. `UK Offer AI Academic Evaluator`
-2. `UK Offer AI High-Scoring Writing Examples`
-3. `UK Universities High-Scoring Writing Library` infrastructure (optional source-backed accumulation layer)
+## What is included
 
-The evaluator handles formative essay scoring. The public writing-examples experience can now run in an AI-only mode: it generates high-scoring example sentences, paragraphs, templates, and follow-up insights in real time, while keeping a local browser accumulation layer for later analysis. The original source-backed library foundation, crawler, admin UI, and Supabase schema are still present for a later upgrade path.
+- polished marketing homepage
+- bilingual UI foundation (`zh` + `en`)
+- login / signup flow with signed session cookies and local dev fallback
+- dashboard shell with sidebar + top toolbar
+- project workspace pages
+- upload + text extraction + chunking + embedding pipeline
+- retrieval-assisted chat over uploaded docs
+- structured evaluation report generator
+- assignment brief analyzer
+- citation helper
+- academic search workspace scaffold
+- appeal evidence organizer scaffold
+- admin overview panel
+- Prisma schema + migration + seed
+- local JSON fallback store for development/demo mode
 
-## Product boundaries
+## Compliance boundaries
 
-- This is not an official university marking system.
-- The writing library is not a piracy library.
-- AI-generated examples must be presented as AI-generated learning material, not as real university sample answers.
-- The public library only stores and displays public metadata, summaries, official rubric descriptors, short public excerpts where appropriate, source URLs, and access status.
-- The product does not imply university endorsement of UK Offer.
+Allowed:
+
+- essay evaluation
+- feedback reports
+- rubric analysis
+- outline suggestions
+- citation formatting assistance
+- document summarization
+- academic source search support
+- appeal evidence organization
+- writing improvement suggestions
+
+Not allowed:
+
+- ghostwriting full assignments for submission
+- plagiarism evasion
+- AI detector bypassing / masking tools
+- false claims of official partnerships
+- misleading academic integrity guarantees
 
 ## Stack
 
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- React 19
-- Server-side API routes
-- OpenAI Responses API with Structured Outputs
-- OpenAI embeddings API
-- Supabase / PostgreSQL (optional when using source-backed accumulation)
-- pgvector (optional when using source-backed accumulation)
-- Vercel-ready deployment
+- component system in `components/ui`
+- Framer Motion
+- Prisma
+- PostgreSQL
+- pgvector
+- OpenAI Responses API + embeddings
+- local file storage fallback
+- Zod validation
 
-## Main capabilities
-
-### Essay evaluator
-
-- Paste or upload essay text
-- Paste or upload teacher brief / criteria / rubric
-- Parse `.pdf`, `.docx`, `.txt`
-- Score out of 100 with five 20-point dimensions
-- Strict JSON-schema output from OpenAI
-- Results page, history page, submission persistence
-
-### AI high-scoring writing examples
-
-- `/library/examples` now works as an AI-only real-time generation workspace
-- Users choose subject, level, assignment type, and target score band
-- The API returns:
-  - high-scoring example sentences
-  - a model paragraph
-  - expression templates
-  - analytical notes
-  - usage reminders
-- Generated packs are accumulated in browser local storage for later reuse
-- `/library/insights` analyzes those accumulated AI-generated packs instead of pretending to query a real-time university corpus
-- `/library/rubrics` can still surface rubric references from the optional source-backed layer
-
-### Optional source-backed accumulation layer
-
-- Universities table and source registry
-- Controlled crawler for HTML / PDF / DOCX source lists
-- Change detection with content hashing
-- Normalization pipeline using the OpenAI Responses API
-- Separate tables for:
-  - universities
-  - source_sites
-  - source_pages
-  - crawl_runs
-  - normalization_runs
-  - high_scoring_examples
-  - rubrics
-  - marker_feedback_patterns
-  - library_embeddings
-- Admin pages for sources, crawls, normalization, examples, rubrics, and sync
-- Semantic search backed by pgvector
-- Source-backed insight synthesis using retrieved evidence only
-
-## Project structure
+## File structure
 
 ```text
-uk-offer-ai-academic-evaluator/
-├── app/
-│   ├── admin/
-│   │   ├── crawls/
-│   │   ├── examples/
-│   │   ├── library-sync/
-│   │   ├── normalization/
-│   │   ├── rubrics/
-│   │   ├── sources/
-│   │   └── universities/
-│   ├── api/
-│   │   ├── admin/
-│   │   ├── evaluate/
-│   │   ├── library/
-│   │   └── submissions/
-│   ├── evaluate/
-│   ├── history/
-│   ├── library/
-│   ├── results/[id]/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   ├── admin/
-│   └── library/
-├── config/
-├── docs/examples/
-├── lib/
-│   ├── admin/
-│   ├── ai-library/
-│   ├── crawler/
-│   ├── jobs/
-│   ├── library/
-│   ├── openai/
-│   ├── supabase/
-│   └── ...
-├── public/
-├── supabase/
-│   ├── migrations/
-│   ├── schema.sql
-│   ├── seed.sql
-│   └── seed-library.sql
-└── README.md
+app/
+  admin/
+  api/
+  dashboard/
+  login/
+  pricing/
+  signup/
+  tools/
+components/
+  auth/
+  dashboard/
+  marketing/
+  ui/
+config/
+lib/
+prisma/
+services/
+types/
 ```
 
-## Environment variables
+## Setup
 
-Copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-For Vercel beginners, there is also a simplified Chinese deployment note:
-
-- [`DEPLOY_VERCEL_CN.md`](./DEPLOY_VERCEL_CN.md)
-- [` .env.vercel.example`](./.env.vercel.example)
-
-### Minimum for AI-only mode
-
-```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-5.4
-OPENAI_EXAMPLE_GENERATION_MODEL=gpt-5.4
-OPENAI_EXAMPLE_INSIGHTS_MODEL=gpt-5.4
-
-UKOFFER_ADMIN_TOKEN=choose_a_long_random_admin_token
-```
-
-This is enough to run:
-
-- real-time essay scoring
-- real-time AI-generated high-scoring examples
-- browser-local accumulation
-- AI insights over accumulated examples
-
-### Additional variables for source-backed accumulation layer
-
-```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-5.4
-OPENAI_EXAMPLE_GENERATION_MODEL=gpt-5.4
-OPENAI_EXAMPLE_INSIGHTS_MODEL=gpt-5.4
-OPENAI_NORMALIZATION_MODEL=gpt-5.4-mini
-OPENAI_INSIGHTS_MODEL=gpt-5.4
-OPENAI_EMBEDDING_MODEL=text-embedding-3-small
-
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-UKOFFER_ADMIN_TOKEN=choose_a_long_random_admin_token
-```
-
-### Optional
-
-```env
-ENABLE_DEMO_EVALUATION=true
-```
-
-When `ENABLE_DEMO_EVALUATION=true` and `OPENAI_API_KEY` is not set:
-
-- the essay evaluator still returns deterministic demo reports
-- `/library/examples` still returns deterministic AI-style demo packs
-- `/library/insights` still returns deterministic demo analysis over accumulated packs
-
-This keeps the AI-only UI flow testable before a live OpenAI key is added.
-
-## Local setup
-
-1. Install Node.js 20 or later.
+1. Install Node.js 20+.
 2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Create the local environment file:
+3. Copy environment variables:
 
 ```bash
 cp .env.example .env.local
 ```
 
-4. If you want the source-backed accumulation layer, configure Supabase.
-
-If you use the SQL editor manually, run:
-
-1. [`supabase/schema.sql`](./supabase/schema.sql)
-2. [`supabase/seed.sql`](./supabase/seed.sql)
-3. [`supabase/seed-library.sql`](./supabase/seed-library.sql)
-
-If you use Supabase migrations / CLI, apply:
-
-1. [`supabase/migrations/20260320_create_writing_library.sql`](./supabase/migrations/20260320_create_writing_library.sql)
-2. then seed with [`supabase/seed.sql`](./supabase/seed.sql) and [`supabase/seed-library.sql`](./supabase/seed-library.sql)
-
-5. Run quality checks:
+4. Generate Prisma client and apply the schema:
 
 ```bash
-npm run lint
-npm run build
+npx prisma generate
+npx prisma migrate deploy
 ```
 
-6. Start the dev server:
+5. Optional: run the seed script:
+
+```bash
+npm run db:seed
+```
+
+6. Start development:
 
 ```bash
 npm run dev
 ```
 
-7. Open:
+## Environment variables
 
-- [http://localhost:3000](http://localhost:3000)
-- [http://localhost:3000/library](http://localhost:3000/library)
+The minimum local fallback setup is:
 
-If you are only testing the AI-only product path, you can skip the Supabase setup and still use:
-
-- `/evaluate`
-- `/library/examples`
-- `/library/insights`
-
-## Admin access
-
-The admin UI is protected by a simple server-side session gate backed by `UKOFFER_ADMIN_TOKEN`.
-
-1. Set `UKOFFER_ADMIN_TOKEN` in `.env.local`
-2. Start the app
-3. Visit any admin page, for example:
-   - `/admin/universities`
-   - `/admin/sources`
-   - `/admin/library-sync`
-4. Enter the token in the admin access form
-
-The token is validated server-side and stored in an HTTP-only cookie. Admin API routes also accept the same secret through the `x-admin-key` header for server-to-server usage.
-
-## Library sync architecture
-
-### Crawl phase
-
-- Reads active `source_sites`
-- Fetches HTML / PDF / DOCX resources
-- Extracts raw text
-- Stores `raw_html` only where appropriate
-- Avoids persisting restricted page bodies
-- Computes content hash
-- Writes or updates `source_pages`
-- Queues only new or changed public pages for normalization
-
-### Normalization phase
-
-- Reads queued `normalization_runs`
-- Sends only changed/new pages to OpenAI
-- Uses strict Structured Outputs with JSON schema
-- Allows one of:
-  - `high_scoring_example`
-  - `rubric`
-  - `marker_feedback_pattern`
-  - `ignore`
-- Validates output with Zod before any DB write
-- Upserts examples / rubrics / feedback rows
-- Rebuilds embeddings for changed entities
-- Failed normalization jobs can be retried from `/admin/normalization`, and retries immediately re-process the selected queue items
-
-### Insights phase
-
-- Retrieves matching records from pgvector / lexical fallback
-- Builds evidence context from the database
-- Sends only retrieved context to OpenAI
-- Returns concise source-backed synthesis
-- Avoids unsupported claims
-
-## OpenAI implementation notes
-
-### Essay evaluator
-
-`POST /api/evaluate`:
-
-1. validates form data
-2. rejects empty essay submissions
-3. rejects unsupported file types
-4. extracts text from supported uploads
-5. calls the Responses API with a strict scoring schema
-6. validates with Zod
-7. normalizes score totals so the five dimensions always sum to `overall_score`
-8. persists to Supabase when configured
-
-### Library normalization
-
-Server-only files:
-
-- [`lib/openai/client.ts`](./lib/openai/client.ts)
-- [`lib/openai/normalize-page.ts`](./lib/openai/normalize-page.ts)
-- [`lib/openai/schemas.ts`](./lib/openai/schemas.ts)
-- [`lib/openai/prompts.ts`](./lib/openai/prompts.ts)
-
-Model roles:
-
-- cheaper normalization model for page extraction
-- stronger insight model for source-backed synthesis
-
-The API key is never exposed client-side.
-
-## Public library routes
-
-- `POST /api/library/examples/generate`
-- `GET /api/library/examples`
-- `GET /api/library/examples/[id]`
-- `GET /api/library/rubrics`
-- `GET /api/library/rubrics/[id]`
-- `GET /api/library/search`
-- `POST /api/library/insights/query`
-
-## Admin routes
-
-- `GET /api/admin/universities`
-- `POST /api/admin/universities`
-- `PATCH /api/admin/universities/[id]`
-- `GET /api/admin/sources`
-- `POST /api/admin/sources`
-- `PATCH /api/admin/sources/[id]`
-- `POST /api/admin/sources/[id]/test-crawl`
-- `GET /api/admin/crawls`
-- `GET /api/admin/crawls/[id]`
-- `POST /api/admin/crawls/run`
-- `GET /api/admin/normalization-runs`
-- `GET /api/admin/normalization-runs/[id]`
-- `POST /api/admin/normalization-runs/retry`
-- `GET /api/admin/examples`
-- `PATCH /api/admin/examples/[id]`
-- `POST /api/admin/examples/[id]/verify`
-- `GET /api/admin/rubrics`
-- `PATCH /api/admin/rubrics/[id]`
-- `POST /api/admin/rubrics/[id]/verify`
-- `GET /api/admin/library/status`
-- `POST /api/admin/library/sync-now`
-- `POST /api/admin/library/rebuild-embeddings`
-- `GET /api/admin/library/live-events`
-
-## Example schema and prompt references
-
-- Normalization schema example:
-  [`docs/examples/library-normalization-schema.example.json`](./docs/examples/library-normalization-schema.example.json)
-- Normalization prompt example:
-  [`docs/examples/library-normalization-prompt.example.md`](./docs/examples/library-normalization-prompt.example.md)
-- Insight synthesis prompt example:
-  [`docs/examples/library-insights-prompt.example.md`](./docs/examples/library-insights-prompt.example.md)
-
-## Deployment on Vercel
-
-1. Import the project into Vercel.
-2. Add the environment variables listed above.
-3. Ensure Supabase has `pgvector` enabled and the migration applied.
-4. Run a production build:
-
-```bash
-npm run build
+```env
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+AUTH_SECRET=replace-this-with-a-long-random-secret
+AUTH_DEMO_MODE=true
+ENABLE_DEMO_EVALUATION=true
 ```
 
-5. Deploy.
+For live OpenAI features:
 
-Recommended Vercel server-side envs:
+```env
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-5.4
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+```
 
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
-- `OPENAI_NORMALIZATION_MODEL`
-- `OPENAI_INSIGHTS_MODEL`
-- `OPENAI_EMBEDDING_MODEL`
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `UKOFFER_ADMIN_TOKEN`
-- `ENABLE_DEMO_EVALUATION`
-- `NEXT_PUBLIC_SITE_URL`
+For live PostgreSQL / Prisma:
 
-## Verification status
+```env
+DATABASE_URL=postgresql://user:password@host:5432/scholardesk
+```
 
-This repository was updated to be local-test and Vercel-deploy ready by code inspection. In the current shell environment, `node` and `npm` were not available, so runtime verification was not possible here. Before production launch, run:
+For a production-like auth setup:
+
+```env
+AUTH_SECRET=replace-with-a-long-random-secret
+AUTH_DEMO_MODE=false
+```
+
+Optional storage variables for future S3-compatible mode:
+
+```env
+S3_ENDPOINT=
+S3_REGION=
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+S3_BUCKET=
+```
+
+If all S3 variables are supplied, uploaded files are written to the configured S3-compatible bucket. Otherwise the app falls back to local storage under `.local/scholardesk/uploads`.
+
+Optional local fallback override:
+
+```env
+SCHOLARDESK_LOCAL_DATA_DIR=/tmp/scholardesk
+```
+
+This is useful on platforms such as Vercel where the project directory is read-only at runtime.
+
+## How retrieval works
+
+1. User uploads a file.
+2. The server extracts text from `pdf`, `docx`, `txt`, or `md`.
+3. The text is split into chunks.
+4. If OpenAI is configured, embeddings are created during upload.
+5. In the current first version, chunks are stored in the local fallback store.
+6. The Prisma schema, migration, and seed are included so the storage layer can be moved to PostgreSQL next.
+7. Chat and evaluation requests retrieve top matching chunks for the current project.
+8. Retrieved snippets are included in the assistant answer or report output.
+
+## Mock vs live mode
+
+### Mock / local-first mode
+
+- `AUTH_DEMO_MODE=true`
+- `ENABLE_DEMO_EVALUATION=true`
+- no OpenAI key required
+- no database required
+- data is stored in `.local/scholardesk/store.json`
+- this mode is useful for first-pass UI testing and local demos
+
+### Live mode
+
+- set `OPENAI_API_KEY`
+- set `DATABASE_URL`
+- run Prisma migrations
+- run `npm run db:seed` if you want demo data in PostgreSQL
+- optionally wire S3 variables
+- note: the current runtime still uses the local-first repository layer, while Prisma/PostgreSQL is scaffolded and ready for the next persistence upgrade
+
+## Deployment notes
+
+### Vercel
+
+- add all environment variables in Project Settings
+- use a managed PostgreSQL database
+- ensure persistent file storage is configured if you do not want local ephemeral uploads
+- keep `AUTH_SECRET` and `OPENAI_API_KEY` server-side only
+
+### PostgreSQL + pgvector
+
+- enable the `vector` extension
+- apply `prisma/migrations/20260320_init_scholardesk/migration.sql`
+- if you later move retrieval to SQL-native similarity search, use `DocumentChunk.embedding` as the source of truth
+
+## Important implementation note
+
+Because the current execution environment for this build did not include `node` / `npm`, the codebase was scaffolded and refactored by static inspection only. Before shipping, run:
 
 ```bash
 npm install
@@ -404,11 +223,14 @@ npm run lint
 npm run build
 ```
 
-and manually test:
+## Current auth note
 
-- evaluator flow
-- admin login
-- source test crawl
-- full library sync
-- public library filters
-- insight query flow
+This first version uses a signed-cookie session layer instead of a full Auth.js adapter so the app remains runnable in local fallback mode without external providers. The Prisma schema already includes `Account`, `Session`, and `VerificationToken`, so upgrading to Auth.js later does not require redesigning the database.
+
+## Next recommended steps
+
+1. install dependencies and run the first local build
+2. decide whether to keep the signed-cookie auth layer or swap to Auth.js
+3. connect Prisma to a managed PostgreSQL database
+4. connect OpenAI for live evaluation, brief analysis, and chat
+5. wire S3-compatible storage if uploads must persist in production

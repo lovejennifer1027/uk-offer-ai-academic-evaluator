@@ -1,33 +1,34 @@
-import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
 import "@/app/globals.css";
-import { BRAND_NAME, ORGANISATION_NAME } from "@/lib/constants";
+import { BRAND } from "@/config/site";
+import { getLocale } from "@/lib/i18n";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: BRAND_NAME,
-    template: `%s | ${BRAND_NAME}`
+    default: BRAND.name,
+    template: `%s | ${BRAND.name}`
   },
-  description:
-    "面向中文用户的高端 AI 学术评估网站，支持论文、作业要求与评分标准的形成性反馈。",
-  applicationName: BRAND_NAME,
+  description: BRAND.description.en,
+  applicationName: BRAND.name,
   icons: {
     icon: "/favicon.svg"
   },
   openGraph: {
-    title: BRAND_NAME,
-    description:
-      "由 UK Offer 国际教育提供的高端 AI 学术评估体验，适用于论文与课程作业形成性反馈。",
-    siteName: ORGANISATION_NAME
+    title: BRAND.name,
+    description: BRAND.description.en,
+    siteName: BRAND.name
   }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="zh-CN">
+    <html lang={locale === "en" ? "en" : "zh-CN"}>
       <body className="text-[var(--ink)] antialiased">
         {children}
       </body>

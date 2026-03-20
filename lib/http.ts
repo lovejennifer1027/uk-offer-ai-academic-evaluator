@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z, ZodError, type ZodTypeAny } from "zod";
 
 import { logServerError } from "@/lib/logger";
+import { AdminAccessError, AuthRequiredError } from "@/lib/session";
 
 export class HttpError extends Error {
   readonly statusCode: number;
@@ -63,6 +64,14 @@ export function parseSearchParams<Schema extends ZodTypeAny>(request: Request | 
 }
 
 export function handleApiError(stage: string, error: unknown, fallbackMessage: string) {
+  if (error instanceof AuthRequiredError) {
+    return jsonError(error.message, 401);
+  }
+
+  if (error instanceof AdminAccessError) {
+    return jsonError(error.message, 403);
+  }
+
   if (error instanceof HttpError) {
     return jsonError(error.message, error.statusCode, error.details);
   }

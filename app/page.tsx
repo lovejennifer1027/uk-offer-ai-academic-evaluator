@@ -1,396 +1,169 @@
 import Link from "next/link";
+import { LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 
-import { PageShell } from "@/components/page-shell";
-import { BRAND_NAME, FORMATIVE_DISCLAIMER, ORGANISATION_NAME } from "@/lib/constants";
+import { FAQAccordion } from "@/components/marketing/faq-accordion";
+import { FeatureCard } from "@/components/marketing/feature-card";
+import { HeroSection } from "@/components/marketing/hero-section";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { MarketingHeader } from "@/components/marketing/marketing-header";
+import { PricingCard } from "@/components/marketing/pricing-card";
+import { SectionHeading } from "@/components/marketing/section-heading";
+import { StatsStrip } from "@/components/marketing/stats-strip";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { getDictionary, getLocale } from "@/lib/i18n";
 
-const heroMetrics = [
-  {
-    value: "100 分",
-    label: "固定总分制，始终由五个维度精确相加。"
-  },
-  {
-    value: "5 项",
-    label: "结构、批判性思维、文献使用、引用规范、语言表达。"
-  },
-  {
-    value: "UK 标准",
-    label: "优先遵循老师要求，必要时回退到英国高校学术写作标准。"
-  }
-];
+export default async function HomePage() {
+  const locale = await getLocale();
+  const dict = getDictionary(locale);
 
-const heroAnalysisSignals = [
-  {
-    title: "论文结构识别",
-    status: "已完成"
-  },
-  {
-    title: "老师要求匹配",
-    status: "进行中"
-  },
-  {
-    title: "五维评分生成",
-    status: "等待输出"
-  }
-];
-
-const credibilityPoints = [
-  {
-    title: "更像顾问工作台",
-    description:
-      "首页与评估页都围绕“快速进入正式评估”设计，而不是展示型学生页面。"
-  },
-  {
-    title: "更适合家长与高价值客户",
-    description:
-      "措辞、结构和视觉节奏都偏成熟克制，更适合教育咨询和正式演示场景。"
-  },
-  {
-    title: "服务端安全执行",
-    description:
-      "文件在服务端解析与校验，OpenAI 密钥不会出现在前端，输出再经过严格 Schema 验证。"
-  }
-];
-
-const processSteps = [
-  {
-    step: "01",
-    title: "放入论文内容",
-    description: "支持直接粘贴，也支持上传 PDF、DOCX、TXT 文件。"
-  },
-  {
-    step: "02",
-    title: "补充老师要求",
-    description: "把作业说明、评分标准或评分量表一起提交。"
-  },
-  {
-    step: "03",
-    title: "收到正式报告",
-    description: "返回总分、五维分数、总体反馈、优点、不足和修改建议。"
-  }
-];
-
-const scoringDimensions = [
-  {
-    label: "结构",
-    score: "20",
-    detail: "文章组织、逻辑连贯性与段落推进是否清楚。"
-  },
-  {
-    label: "批判性思维",
-    score: "20",
-    detail: "分析、比较、评价与论证深度是否到位。"
-  },
-  {
-    label: "文献使用",
-    score: "20",
-    detail: "文献选择、整合方式和证据支撑是否充分。"
-  },
-  {
-    label: "引用规范",
-    score: "20",
-    detail: "引用格式、准确性与一致性是否符合要求。"
-  },
-  {
-    label: "语言表达",
-    score: "20",
-    detail: "学术语言是否准确、清晰并维持正式语气。"
-  }
-];
-
-const reasons = [
-  {
-    title: "先看到真实问题，再决定是否继续辅导",
-    description:
-      "报告更适合作为第一轮筛查，帮助学生和家长判断论文真正的问题集中在哪里。"
-  },
-  {
-    title: "适合演示给客户，而不是只适合学生自己用",
-    description:
-      "从文案到界面都保持正式可信，更符合教育机构、顾问和高端家长沟通场景。"
-  },
-  {
-    title: "可以自然衔接 UK Offer 后续服务",
-    description:
-      "评估结果能直接过渡到学术辅导、修改规划与国际教育咨询服务。"
-  }
-];
-
-export default function HomePage() {
   return (
-    <PageShell>
-      <section className="hero-shell relative overflow-hidden pb-24 pt-14 md:pb-28 md:pt-20">
-        <div className="page-container">
-          <div className="hero-stage px-7 py-8 md:px-10 md:py-10 xl:px-12 xl:py-12">
-            <div className="grid gap-10 xl:grid-cols-[1.02fr_0.98fr] xl:items-center">
-              <div className="relative z-10">
-                <span className="eyebrow-pill text-sm font-semibold">{ORGANISATION_NAME}</span>
-                <h1 className="mt-7 max-w-5xl text-5xl leading-[0.96] text-[var(--navy)] md:text-6xl xl:text-7xl">
-                  先别急着改论文，
-                  <br className="hidden xl:block" />
-                  先让 AI 告诉你最可能丢分的地方。
-                </h1>
-                <p className="mt-7 max-w-3xl text-lg leading-9 text-[var(--muted)]">
-                  {BRAND_NAME} 把论文初评、老师要求和正式报告整合成一条更像真实教育产品的工作流。你上传论文和评分标准后，系统会在几秒内返回更正式、更稳定、也更适合咨询场景展示的形成性评估结果。
-                </p>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f5f7ff_0%,#fafbff_35%,#f7f9fd_100%)]">
+      <MarketingHeader locale={locale} nav={dict.nav} loginLabel={dict.ui.login} ctaLabel={dict.ui.startFreeEvaluation} />
 
-                <div className="mt-9 flex flex-wrap gap-3">
-                  <Link href="/evaluate" className="luxury-button text-sm">
-                    立即开始评估
-                  </Link>
-                  <Link href="/history" className="luxury-button-muted text-sm">
-                    查看历史报告
-                  </Link>
-                </div>
+      <main>
+        <section className="mx-auto max-w-7xl px-5 pb-16 pt-10 md:px-8 md:pb-24">
+          <HeroSection
+            locale={locale}
+            title={dict.brand.tagline}
+            description={dict.brand.description}
+            primaryCta={dict.ui.startFreeEvaluation}
+            secondaryCta={dict.ui.viewDemo}
+          />
+        </section>
 
-                <div className="mt-8 flex flex-wrap gap-3 text-sm">
-                  <span className="quiet-badge">优先参考老师要求</span>
-                  <span className="quiet-badge">支持 PDF / DOCX / TXT</span>
-                  <span className="quiet-badge">AI 几秒内返回结果</span>
-                </div>
+        <section className="mx-auto max-w-7xl px-5 py-6 md:px-8 md:py-10">
+          <StatsStrip items={dict.metrics} />
+        </section>
 
-                <div className="mt-11 grid gap-4 sm:grid-cols-3">
-                  {heroMetrics.map((item) => (
-                    <div key={item.value} className="story-metric">
-                      <div className="story-metric-value">{item.value}</div>
-                      <div className="story-metric-label">{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="modern-showcase relative z-10 p-6 md:p-8">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">实时评估预览</p>
-                    <h2 className="mt-4 text-2xl text-[var(--navy)] md:text-3xl">
-                      更像真实 AI 工作台，而不是普通展示型首页。
-                    </h2>
-                  </div>
-                  <span className="signal-status">
-                    <span className="signal-dot is-live" />
-                    AI 正在评估
-                  </span>
-                </div>
-
-                <div className="mt-6 space-y-5">
-                  <article className="mini-floating-card p-5 md:p-6">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-[var(--navy)]">Essay draft uploaded</p>
-                      <span className="rounded-full border border-[rgba(59,76,107,0.08)] bg-white/78 px-3 py-1 text-xs text-[var(--muted)]">
-                        2 min ago
-                      </span>
-                    </div>
-                    <p className="mt-4 text-lg leading-8 text-[var(--muted)]">
-                      论文正文与老师要求被放进同一个流程里，系统正在先识别结构、要求匹配和维度风险，再生成最终报告。
-                    </p>
-                  </article>
-
-                  <div className="grid gap-5 lg:grid-cols-[1.06fr_0.94fr]">
-                    <article className="surface-inset rounded-[30px] p-5 md:p-6">
-                      <p className="text-sm font-semibold text-[var(--navy)]">分析进度</p>
-                      <div className="signal-bar mt-5">
-                        {heroAnalysisSignals.map((item) => (
-                          <div key={item.title} className="signal-row">
-                            <div>
-                              <strong>{item.title}</strong>
-                              <span className="mt-1 block">系统正在生成正式评估报告</span>
-                            </div>
-                            <span className="signal-status">
-                              <span className={`signal-dot ${item.status === "进行中" ? "is-live" : ""}`} />
-                              {item.status}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </article>
-
-                    <article className="mini-floating-card p-5 md:p-6">
-                      <p className="text-sm font-semibold text-[var(--gold)]">预览评分</p>
-                      <p className="mt-4 text-5xl font-semibold text-[var(--navy)]">
-                        74
-                        <span className="ml-2 text-lg font-medium text-[var(--muted)]">/100</span>
-                      </p>
-                      <div className="soft-divider my-5" />
-                      <div className="space-y-3 text-sm text-[var(--muted)]">
-                        <div className="flex items-center justify-between gap-3">
-                          <span>结构</span>
-                          <strong className="text-[var(--navy)]">15 / 20</strong>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                          <span>批判性思维</span>
-                          <strong className="text-[var(--navy)]">14 / 20</strong>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                          <span>引用规范</span>
-                          <strong className="text-[var(--navy)]">13 / 20</strong>
-                        </div>
-                      </div>
-                    </article>
-                  </div>
-
-                  <article className="mini-floating-card p-5 md:p-6">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm font-semibold text-[var(--navy)]">最终输出</p>
-                      <span className="text-xs font-semibold text-[var(--gold)]">严格 JSON Schema</span>
-                    </div>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                      {["总分 + 五维分数", "总体反馈 + 优点 / 不足", "修改建议 + 免责声明"].map((item) => (
-                        <div
-                          key={item}
-                          className="rounded-[22px] border border-[rgba(59,76,107,0.06)] bg-white/82 px-4 py-4 text-sm text-[var(--muted)]"
-                        >
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                  </article>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="page-container py-6 md:py-10">
-        <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-          <article className="story-shell rounded-[38px] p-8 md:p-10">
-            <span className="eyebrow-pill text-sm font-semibold">为什么这套体验更像商业产品</span>
-            <h2 className="mt-5 text-3xl text-[var(--navy)] md:text-4xl">
-              不是一堆卡片拼起来，而是先让客户立刻理解“现在发生了什么”。
-            </h2>
-            <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-              这次把首页做成更像现代 AI 产品着陆页的结构。对家长、学生和咨询客户来说，这种“先理解问题，再看到实时处理，再进入动作”的方式，会比传统咨询站更直观。
-            </p>
-          </article>
-
-          <div className="grid gap-5 lg:grid-cols-3">
-            {credibilityPoints.map((item) => (
-              <article key={item.title} className="card-surface rounded-[36px] p-7">
-                <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">可信特征</p>
-                <h2 className="mt-4 text-2xl text-[var(--navy)]">{item.title}</h2>
-                <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{item.description}</p>
-              </article>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <SectionHeading
+            badge={locale === "en" ? "Core workflows" : "核心工作流"}
+            title={locale === "en" ? "Six focused tools inside one calmer academic workspace." : "把六类核心能力放进同一个更清晰的学术工作台。"}
+            description={
+              locale === "en"
+                ? "ScholarDesk AI is designed for evaluation, review, and organization workflows that remain compatible with academic integrity expectations."
+                : "ScholarDesk AI 面向评估、复盘与整理场景设计，保持与学术诚信要求兼容。"
+            }
+          />
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {dict.features.map((feature) => (
+              <FeatureCard key={feature.key} icon={feature.icon} title={feature.title} description={feature.description} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="page-container py-18 md:py-24">
-        <div className="process-band rounded-[42px] p-8 md:p-10">
-          <div className="grid gap-10 xl:grid-cols-[0.8fr_1.2fr] xl:items-start">
-            <div>
-              <span className="eyebrow-pill text-sm font-semibold">使用流程</span>
-              <h2 className="mt-5 text-3xl text-[var(--navy)] md:text-4xl">
-                把输入、标准和反馈放进一条清楚的工作流。
-              </h2>
-              <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)]">
-                页面现在会更像一个真实产品流程，而不是静态介绍。用户能先看到三步，再进入评估，不容易迷路。
-              </p>
-            </div>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <SectionHeading
+            badge={locale === "en" ? "How it works" : "工作方式"}
+            title={locale === "en" ? "Create a project, upload context, then run the workflow you need." : "先创建项目，再上传材料，最后运行需要的 AI 工作流。"}
+          />
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {dict.steps.map((step) => (
+              <Card key={step.step} className="rounded-[30px]">
+                <Badge>{step.step}</Badge>
+                <h3 className="mt-5 text-2xl font-semibold text-slate-950">{step.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
 
-            <div className="grid gap-5 md:grid-cols-3">
-              {processSteps.map((step) => (
-                <article key={step.step} className="process-step-card">
-                  <span className="process-step-number">{step.step}</span>
-                  <h3 className="mt-4 text-2xl text-[var(--navy)]">{step.title}</h3>
-                  <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{step.description}</p>
-                </article>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+            <Card className="rounded-[34px] bg-slate-950 p-8 text-white">
+              <Badge className="border-white/20 bg-white/10 text-white">{dict.ui.privacyTitle}</Badge>
+              <h2 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{locale === "en" ? "Designed for trust, not academic shortcuts." : "以可信赖为前提设计，而不是提供学术捷径。"}</h2>
+              <div className="mt-6 space-y-4 text-sm leading-7 text-white/75">
+                {dict.ui.privacyPoints.map((item: string) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <ShieldCheck className="mt-1 h-4 w-4" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              {[
+                {
+                  icon: LockKeyhole,
+                  title: locale === "en" ? "User-owned content" : "内容归用户所有",
+                  body:
+                    locale === "en"
+                      ? "Files and outputs are handled as user-owned workspace content, not public training material."
+                      : "文件和输出被视作用户自己的工作区内容，而不是公开训练材料。"
+                },
+                {
+                  icon: Sparkles,
+                  title: locale === "en" ? "Grounded assistance" : "基于上下文的辅助",
+                  body:
+                    locale === "en"
+                      ? "Retrieval over uploaded documents helps the assistant stay grounded in project context."
+                      : "围绕上传材料进行检索，帮助 AI 回答更贴近项目上下文。"
+                }
+              ].map((item) => (
+                <Card key={item.title} className="rounded-[30px]">
+                  <item.icon className="h-5 w-5 text-indigo-600" />
+                  <h3 className="mt-5 text-xl font-semibold text-slate-950">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{item.body}</p>
+                </Card>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="page-container py-8 md:py-12">
-        <div className="grid gap-9 xl:grid-cols-[0.86fr_1.14fr]">
-          <div className="story-shell rounded-[40px] p-8 md:p-10">
-            <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">评分维度</p>
-            <h2 className="mt-4 text-3xl text-[var(--navy)] md:text-4xl">分数结构要清楚，报告也要一眼能读懂。</h2>
-            <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-              页面会继续维持正式语气，但视觉上更轻、更现代、更像成熟 SaaS，而不是传统教育说明页。
-            </p>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {scoringDimensions.map((item) => (
-              <article key={item.label} className="card-surface rounded-[34px] p-7">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-[var(--muted)]">{item.label}</p>
-                    <p className="mt-3 text-4xl font-semibold text-[var(--navy)]">
-                      {item.score}
-                      <span className="ml-1 text-base font-medium text-[var(--muted)]">/20</span>
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[rgba(141,139,198,0.1)] px-3 py-2 text-xs font-semibold text-[var(--navy)]">
-                    评分项
-                  </span>
-                </div>
-                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{item.detail}</p>
-              </article>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <SectionHeading badge={locale === "en" ? "Testimonials" : "示例反馈"} title={locale === "en" ? "Mock client-style reactions for the first version." : "面向第一版产品的示例型用户反馈。"} />
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {dict.testimonials.map((item) => (
+              <Card key={item.name} className="rounded-[30px]">
+                <div className="text-base font-semibold text-slate-950">{item.name}</div>
+                <div className="mt-2 text-sm text-slate-500">{item.role}</div>
+                <p className="mt-5 text-sm leading-7 text-slate-600">{item.quote}</p>
+              </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="advisory-services" className="page-container py-18 md:py-24">
-        <div className="dark-panel rounded-[42px] p-9 text-white md:p-11">
-          <div className="grid gap-9 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
-            <div>
-              <p className="section-eyebrow text-sm font-semibold text-[var(--gold-soft)]">
-                为什么用 UK Offer AI 评估
-              </p>
-              <h2 className="mt-4 text-3xl md:text-4xl">
-                这不是学生练手页，而是面向正式咨询场景的商业化产品界面。
-              </h2>
-              <p className="mt-5 max-w-3xl text-base leading-8 text-white/72">
-                首页、评估页和结果页都会继续沿着“更像真实商业 SaaS、更少展示感、更强任务引导”的方向优化，同时保留 UK Offer 更正式、更可信的学术服务定位。
-              </p>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-3">
-              {reasons.map((reason) => (
-                <article
-                  key={reason.title}
-                  className="rounded-[30px] border border-white/14 bg-white/10 p-6 backdrop-blur-sm"
-                >
-                  <h3 className="text-2xl text-white">{reason.title}</h3>
-                  <p className="mt-4 text-sm leading-8 text-white/70">{reason.description}</p>
-                </article>
-              ))}
-            </div>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <SectionHeading badge={locale === "en" ? "FAQ" : "FAQ"} title={dict.ui.faqTitle} />
+          <div className="mt-10">
+            <FAQAccordion items={dict.faqs} />
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="page-container pb-24">
-        <div className="story-shell rounded-[42px] p-9 md:p-11">
-          <div className="grid gap-9 xl:grid-cols-[1.06fr_0.94fr] xl:items-center">
-            <div>
-              <span className="eyebrow-pill text-sm font-semibold">免责声明与行动入口</span>
-              <h2 className="mt-5 text-3xl text-[var(--navy)] md:text-4xl">
-                明确定位为形成性反馈，但足够正式、足够好看，也足够可信。
-              </h2>
-              <p className="mt-5 max-w-3xl text-sm leading-8 text-[var(--muted)]">{FORMATIVE_DISCLAIMER}</p>
-            </div>
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <SectionHeading badge={locale === "en" ? "Pricing" : "价格方案"} title={dict.ui.pricingTitle} />
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {dict.pricing.map((tier) => (
+              <PricingCard key={tier.key} tier={tier} ctaLabel={locale === "en" ? "Choose plan" : "选择方案"} />
+            ))}
+          </div>
+        </section>
 
-            <div className="mini-floating-card p-7">
-              <p className="text-sm font-semibold text-[var(--navy)]">现在就可以进入评估工作台</p>
-              <p className="mt-3 text-sm leading-8 text-[var(--muted)]">
-                直接粘贴论文，或上传文件后开始。评估完成后，报告会同步进入历史记录页面，便于继续查看和演示。
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/evaluate" className="luxury-button text-sm">
-                  进入评估页
+        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+          <Card className="rounded-[36px] bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(55,65,81,0.96))] px-8 py-10 text-white">
+            <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-center">
+              <div>
+                <h2 className="text-4xl font-semibold tracking-[-0.05em]">{dict.ui.finalCtaTitle}</h2>
+                <p className="mt-4 max-w-3xl text-sm leading-8 text-white/70">{dict.ui.finalCtaBody}</p>
+              </div>
+              <div className="flex flex-wrap gap-3 xl:justify-end">
+                <Link href="/signup">
+                  <Button>{dict.ui.startFreeEvaluation}</Button>
                 </Link>
-                <Link href="/history" className="luxury-button-muted text-sm">
-                  查看报告记录
+                <Link href="/tools">
+                  <Button variant="secondary">{dict.ui.tools}</Button>
                 </Link>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-    </PageShell>
+          </Card>
+        </section>
+      </main>
+
+      <MarketingFooter locale={locale} nav={dict.nav} />
+    </div>
   );
 }
