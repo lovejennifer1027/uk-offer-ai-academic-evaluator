@@ -26,24 +26,49 @@ export default function LibraryHomePage() {
       <section className="hero-shell pb-18 pt-14 md:pb-24 md:pt-18">
         <div className="page-container">
           <div className="card-surface rounded-[42px] p-8 md:p-12">
-            <span className="eyebrow-pill text-sm font-semibold">UK Offer AI High-Scoring Writing Library</span>
-            <h1 className="mt-6 max-w-4xl text-4xl text-[var(--navy)] md:text-6xl">
-              面向学习与训练的 AI 高分写作示例库。
-            </h1>
-            <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)]">
-              这里不是公开来源全文库，而是一个 AI-only 工作流：先实时生成高分示句、段落模板和表达框架，再把这些结果积累起来，继续做模式分析和写作训练。
-            </p>
+            <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+              <div className="reading-column">
+                <span className="eyebrow-pill text-sm font-semibold">UK Offer AI High-Scoring Writing Library</span>
+                <h1 className="mt-6 max-w-4xl text-4xl text-[var(--navy)] md:text-6xl">
+                  面向学习与训练的 AI 高分写作示例库。
+                </h1>
+                <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)]">
+                  这里不是公开来源全文库，而是一个 AI-only 工作流：先实时生成高分示句、段落模板和表达框架，再把这些结果积累起来，继续做模式分析和写作训练。
+                </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/library/examples" className="luxury-button text-sm">
-                进入高分案例生成
-              </Link>
-              <Link href="/library/insights" className="luxury-button-muted text-sm">
-                分析已积累示例
-              </Link>
-              <Link href="/library/rubrics" className="luxury-button-muted text-sm">
-                查看评分标准参考
-              </Link>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link href="/library/examples" className="luxury-button text-sm">
+                    进入高分案例生成
+                  </Link>
+                  <Link href="/library/insights" className="luxury-button-muted text-sm">
+                    分析已积累示例
+                  </Link>
+                  <Link href="/library/rubrics" className="luxury-button-muted text-sm">
+                    查看评分标准参考
+                  </Link>
+                </div>
+              </div>
+
+              <aside className="section-panel rounded-[32px] p-6 md:p-7">
+                <span className="eyebrow-pill text-sm font-semibold">使用结构</span>
+                <div className="mt-5 grid gap-4">
+                  <div className="stat-tile">
+                    <div className="stat-tile-label">第一步</div>
+                    <div className="stat-tile-value">先生成高分示句、段落模板与表达框架</div>
+                  </div>
+                  <div className="stat-tile">
+                    <div className="stat-tile-label">第二步</div>
+                    <div className="stat-tile-value">把结果留在当前浏览器，作为自己的训练素材池</div>
+                  </div>
+                  <div className="stat-tile">
+                    <div className="stat-tile-label">第三步</div>
+                    <div className="stat-tile-value">继续对这些样本做结构、表达与论证模式分析</div>
+                  </div>
+                </div>
+                <p className="mt-5 text-sm leading-7 text-[var(--muted)]">
+                  这一页更像一个 AI 写作训练工作台，而不是传统资料库首页，所以重点是让你尽快进入生成和分析流程。
+                </p>
+              </aside>
             </div>
           </div>
         </div>
@@ -66,7 +91,7 @@ export default function LibraryHomePage() {
           <article className="card-surface rounded-[34px] p-7 md:p-8">
             <span className="eyebrow-pill text-sm font-semibold">这条路线适合什么</span>
             <h2 className="mt-5 text-3xl text-[var(--navy)]">适合先做 AI-only 产品，而不是先被数据库绑住。</h2>
-            <ul className="mt-5 space-y-3 text-sm leading-8 text-[var(--muted)]">
+            <ul className="editorial-list mt-5 space-y-3 text-sm leading-8 text-[var(--muted)]">
               <li>适合先做“上传 essay 评分 + 高分写作训练”这两个核心模块。</li>
               <li>适合让学生、家长和顾问先看到一个直接可用、几秒有反馈的产品。</li>
               <li>适合先验证哪些学科、分数段和写作任务最值得继续扩展。</li>
@@ -76,7 +101,7 @@ export default function LibraryHomePage() {
           <article className="card-surface rounded-[34px] p-7 md:p-8">
             <span className="eyebrow-pill text-sm font-semibold">使用边界</span>
             <h2 className="mt-5 text-3xl text-[var(--navy)]">所有案例都必须被明确标记为 AI-generated。</h2>
-            <ul className="mt-5 space-y-3 text-sm leading-8 text-[var(--muted)]">
+            <ul className="editorial-list mt-5 space-y-3 text-sm leading-8 text-[var(--muted)]">
               <li>这些内容用于训练和理解高分写法，不是任何大学官方样本。</li>
               <li>系统不会暗示大学 endorsement，也不会伪装成真实学生原文。</li>
               <li>如果后续接入数据库，可以把“积累层”升级成可跨设备持久保存的正式案例池。</li>

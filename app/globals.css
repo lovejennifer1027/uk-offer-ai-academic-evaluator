@@ -238,6 +238,62 @@ textarea {
     radial-gradient(circle at bottom left, var(--violet-soft), transparent 28%);
 }
 
+.section-panel {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 32px rgba(67, 84, 120, 0.05);
+}
+
+.stat-tile {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 249, 253, 0.96)),
+    radial-gradient(circle at top right, var(--blue-soft), transparent 40%);
+  border-radius: 26px;
+  padding: 1.1rem 1.15rem;
+  box-shadow: 0 12px 28px rgba(67, 84, 120, 0.05);
+}
+
+.stat-tile-label {
+  font-size: 0.72rem;
+  line-height: 1.1rem;
+  color: var(--muted);
+}
+
+.stat-tile-value {
+  margin-top: 0.45rem;
+  color: var(--navy);
+  font-size: 1rem;
+  line-height: 1.45rem;
+  font-weight: 650;
+}
+
+.editorial-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.editorial-list li {
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.editorial-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.8rem;
+  left: 0;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: rgba(141, 139, 198, 0.42);
+}
+
+.reading-column {
+  max-width: 58rem;
+}
+
 .soft-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(59, 76, 107, 0.12), transparent);

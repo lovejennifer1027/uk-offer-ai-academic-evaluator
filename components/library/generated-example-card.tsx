@@ -15,7 +15,7 @@ interface GeneratedExampleCardProps {
 export function GeneratedExampleCard({ example }: GeneratedExampleCardProps) {
   return (
     <article className="card-surface rounded-[36px] p-7 md:p-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
         <div className="max-w-3xl">
           <div className="flex flex-wrap gap-2 text-xs text-[var(--muted)]">
             <span className="quiet-badge">AI-generated</span>
@@ -29,10 +29,29 @@ export function GeneratedExampleCard({ example }: GeneratedExampleCardProps) {
           <p className="mt-4 text-sm leading-8 text-[var(--muted)]">{example.overview}</p>
         </div>
 
-        <div className="rounded-[24px] border border-[var(--line)] bg-white/82 px-4 py-3 text-right text-xs text-[var(--muted)]">
-          <p>生成时间</p>
-          <p className="mt-2 font-semibold text-[var(--navy)]">{formatDate(example.createdAt)}</p>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
+          <div className="stat-tile">
+            <div className="stat-tile-label">生成时间</div>
+            <div className="stat-tile-value">{formatDate(example.createdAt)}</div>
+          </div>
+          <div className="stat-tile">
+            <div className="stat-tile-label">输出来源</div>
+            <div className="stat-tile-value">{example.source === "openai" ? "OpenAI 实时生成" : "Demo 生成模式"}</div>
+          </div>
+          <div className="stat-tile sm:col-span-2 xl:col-span-2">
+            <div className="stat-tile-label">当前聚焦</div>
+            <div className="stat-tile-value">{example.focus?.trim() ? example.focus : "未指定额外聚焦点"}</div>
+          </div>
         </div>
+      </div>
+
+      <div className="section-panel mt-7 rounded-[28px] px-5 py-5">
+        <h3 className="text-lg text-[var(--navy)]">先看这组结果适合怎么用</h3>
+        <ul className="editorial-list mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
+          <li>先读高分示句，理解每个句子的写作动作，而不是直接照搬。</li>
+          <li>再看段落示例，感受一整段内部怎样承接、分析和收束。</li>
+          <li>最后结合表达模板和使用提醒，把内容改写成你自己的学科语境。</li>
+        </ul>
       </div>
 
       <div className="mt-7 grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
@@ -75,7 +94,7 @@ export function GeneratedExampleCard({ example }: GeneratedExampleCardProps) {
         <div className="space-y-5">
           <section className="surface-inset rounded-[28px] p-5">
             <h3 className="text-lg text-[var(--navy)]">分析说明</h3>
-            <ul className="mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
+            <ul className="editorial-list mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
               {example.analysis_notes.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -84,7 +103,7 @@ export function GeneratedExampleCard({ example }: GeneratedExampleCardProps) {
 
           <section className="surface-inset rounded-[28px] p-5">
             <h3 className="text-lg text-[var(--navy)]">使用提醒</h3>
-            <ul className="mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
+            <ul className="editorial-list mt-4 space-y-2 text-sm leading-7 text-[var(--muted)]">
               {example.usage_notes.map((item) => (
                 <li key={item}>{item}</li>
               ))}

@@ -89,20 +89,54 @@ export function GeneratedExamplesWorkbench() {
   }
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[0.94fr_1.06fr]">
+    <div className="grid gap-8 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
       <section className="space-y-6">
         <article className="card-surface rounded-[36px] p-7 md:p-8">
-          <span className="eyebrow-pill text-sm font-semibold">AI 实时生成</span>
-          <h2 className="mt-5 text-3xl text-[var(--navy)]">按学科、层级、类型和目标分数段生成高分写作示例。</h2>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="reading-column">
+              <span className="eyebrow-pill text-sm font-semibold">AI 实时生成</span>
+              <h2 className="mt-5 text-3xl text-[var(--navy)]">按学科、层级、类型和目标分数段生成高分写作示例。</h2>
+            </div>
+            <div className="rounded-[24px] border border-[var(--line)] bg-white/82 px-4 py-3 text-sm text-[var(--muted)]">
+              输出内容
+              <div className="mt-2 font-semibold text-[var(--navy)]">示句、段落、模板、说明</div>
+            </div>
+          </div>
           <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
             这里不是公开来源库，而是 AI 实时生成的学习示例工作台。你可以现场生成高分示句、分析段落、表达模板和写法说明，再把结果积累起来供后续复盘与 insights 使用。
           </p>
-          <div className="mt-6 rounded-[24px] border border-[var(--line)] bg-white/76 px-4 py-4 text-sm leading-7 text-[var(--muted)]">
+
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="stat-tile">
+              <div className="stat-tile-label">第一层</div>
+              <div className="stat-tile-value">生成高分写法</div>
+            </div>
+            <div className="stat-tile">
+              <div className="stat-tile-label">第二层</div>
+              <div className="stat-tile-value">保留本地积累</div>
+            </div>
+            <div className="stat-tile">
+              <div className="stat-tile-label">当前状态</div>
+              <div className="stat-tile-value">{history.length} 组已保存</div>
+            </div>
+          </div>
+
+          <div className="section-panel mt-6 rounded-[24px] px-4 py-4 text-sm leading-7 text-[var(--muted)]">
             {historyCountLabel}
           </div>
         </article>
 
         <form onSubmit={handleSubmit} className="card-surface rounded-[36px] p-7 md:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <span className="eyebrow-pill text-sm font-semibold">输入条件</span>
+              <h3 className="mt-4 text-2xl text-[var(--navy)]">先设定你想训练的写作场景。</h3>
+            </div>
+            <p className="max-w-xs text-sm leading-7 text-[var(--muted)]">
+              建议一次只聚焦一个任务类型和一个分数段，这样结果会更清晰，也更容易比较。
+            </p>
+          </div>
+
           <div className="grid gap-5 md:grid-cols-2">
             <label className="block">
               <span className="text-sm font-semibold text-[var(--navy)]">学科 / Subject</span>
@@ -187,10 +221,14 @@ export function GeneratedExamplesWorkbench() {
         </form>
 
         <article className="card-surface rounded-[36px] p-7 md:p-8">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className="eyebrow-pill text-sm font-semibold">积累层</span>
               <h3 className="mt-4 text-2xl text-[var(--navy)]">最近生成的示例会留在当前浏览器里。</h3>
+            </div>
+            <div className="rounded-[22px] border border-[var(--line)] bg-white/82 px-4 py-3 text-right text-xs text-[var(--muted)]">
+              <div>最近保留</div>
+              <div className="mt-2 text-base font-semibold text-[var(--navy)]">{Math.min(history.length, 6)} / 6</div>
             </div>
           </div>
 
@@ -205,7 +243,11 @@ export function GeneratedExamplesWorkbench() {
                   key={item.id}
                   type="button"
                   onClick={() => setResult(item)}
-                  className="block w-full rounded-[24px] border border-[var(--line)] bg-white px-4 py-4 text-left transition hover:border-[rgba(141,139,198,0.24)]"
+                  className={`block w-full rounded-[24px] border px-4 py-4 text-left transition ${
+                    result?.id === item.id
+                      ? "border-[rgba(141,139,198,0.34)] bg-[rgba(255,255,255,0.98)] shadow-[0_14px_32px_rgba(67,84,120,0.08)]"
+                      : "border-[var(--line)] bg-white hover:border-[rgba(141,139,198,0.24)]"
+                  }`}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -223,9 +265,14 @@ export function GeneratedExamplesWorkbench() {
         </article>
       </section>
 
-      <section>
+      <section className="xl:sticky xl:top-28">
         {result ? (
-          <GeneratedExampleCard example={result} />
+          <div className="space-y-5">
+            <div className="section-panel rounded-[28px] px-5 py-4 text-sm leading-7 text-[var(--muted)]">
+              当前右侧是结果阅读区。建议先看顶部摘要和标签，再往下读示句、段落模板、表达模板和使用提醒，这样阅读会更顺。
+            </div>
+            <GeneratedExampleCard example={result} />
+          </div>
         ) : (
           <div className="card-surface rounded-[36px] p-8 md:p-10">
             <span className="eyebrow-pill text-sm font-semibold">结果预览</span>

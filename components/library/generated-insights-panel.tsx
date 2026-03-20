@@ -130,36 +130,77 @@ export function GeneratedInsightsPanel() {
   if (history.length === 0) {
     return (
       <div className="card-surface rounded-[36px] p-8 md:p-10">
-        <span className="eyebrow-pill text-sm font-semibold">积累式分析</span>
-        <h2 className="mt-5 text-3xl text-[var(--navy)]">先生成一些高分示例，再回来做模式分析。</h2>
-        <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
-          这里的 insights 会基于你已经生成并保存在当前浏览器内的高分样本来总结写作规律。现在还没有可分析的样本，所以先去生成几组结果会更合适。
-        </p>
-        <div className="mt-7">
-          <Link href="/library/examples" className="luxury-button text-sm">
-            先去生成高分示例
-          </Link>
+        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+          <div className="reading-column">
+            <span className="eyebrow-pill text-sm font-semibold">积累式分析</span>
+            <h2 className="mt-5 text-3xl text-[var(--navy)]">先生成一些高分示例，再回来做模式分析。</h2>
+            <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
+              这里的 insights 会基于你已经生成并保存在当前浏览器内的高分样本来总结写作规律。现在还没有可分析的样本，所以先去生成几组结果会更合适。
+            </p>
+            <div className="mt-7">
+              <Link href="/library/examples" className="luxury-button text-sm">
+                先去生成高分示例
+              </Link>
+            </div>
+          </div>
+
+          <aside className="section-panel rounded-[28px] p-6">
+            <div className="stat-tile">
+              <div className="stat-tile-label">当前状态</div>
+              <div className="stat-tile-value">还没有可用于分析的本地积累样本</div>
+            </div>
+            <p className="mt-5 text-sm leading-7 text-[var(--muted)]">
+              先在高分示例页生成几组不同条件的案例，再回来问“80+ 常见优势是什么”这类问题，回答会更有层次。
+            </p>
+          </aside>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[0.92fr_1.08fr]">
+    <div className="grid gap-8 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
       <section className="space-y-6">
         <article className="card-surface rounded-[36px] p-7 md:p-8">
-          <span className="eyebrow-pill text-sm font-semibold">AI-generated insights</span>
-          <h2 className="mt-5 text-3xl text-[var(--navy)]">基于你已积累的 AI 高分示例，继续做写作模式分析。</h2>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="reading-column">
+              <span className="eyebrow-pill text-sm font-semibold">AI-generated insights</span>
+              <h2 className="mt-5 text-3xl text-[var(--navy)]">基于你已积累的 AI 高分示例，继续做写作模式分析。</h2>
+            </div>
+            <div className="rounded-[24px] border border-[var(--line)] bg-white/82 px-4 py-3 text-right text-xs text-[var(--muted)]">
+              可分析样本
+              <div className="mt-2 text-base font-semibold text-[var(--navy)]">{filteredHistory.length}</div>
+            </div>
+          </div>
           <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
             这里不会调用真实大学案例库，而是先读取你在示例页积累的 AI 生成案例，再对这些案例做受控综合，所以更适合复盘“哪些表达和结构反复出现”。
           </p>
-          <div className="mt-5 rounded-[24px] border border-[var(--line)] bg-white/76 px-4 py-4 text-sm leading-7 text-[var(--muted)]">
-            当前可分析样本：{filteredHistory.length} 条，提交时最多使用最近 {AI_LIBRARY_MAX_CONTEXT_ITEMS} 条。
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="stat-tile">
+              <div className="stat-tile-label">样本来源</div>
+              <div className="stat-tile-value">当前浏览器内已积累结果</div>
+            </div>
+            <div className="stat-tile">
+              <div className="stat-tile-label">提交上限</div>
+              <div className="stat-tile-value">最近 {AI_LIBRARY_MAX_CONTEXT_ITEMS} 条</div>
+            </div>
+            <div className="stat-tile">
+              <div className="stat-tile-label">分析方式</div>
+              <div className="stat-tile-value">基于样本综合，不做无依据扩写</div>
+            </div>
           </div>
         </article>
 
         <article className="card-surface rounded-[36px] p-7 md:p-8">
-          <h3 className="text-xl text-[var(--navy)]">常见问题</h3>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <span className="eyebrow-pill text-sm font-semibold">快速提问</span>
+              <h3 className="mt-4 text-2xl text-[var(--navy)]">先用这些问题进入分析节奏。</h3>
+            </div>
+            <p className="max-w-xs text-sm leading-7 text-[var(--muted)]">
+              这些只是起点。你也可以把问题改成更具体的“70+ 的文献综述为什么不够像 80+？”这种形式。
+            </p>
+          </div>
           <div className="mt-4 space-y-3">
             {exampleQuestions.map((item) => (
               <button
@@ -175,8 +216,18 @@ export function GeneratedInsightsPanel() {
         </article>
       </section>
 
-      <section className="card-surface rounded-[36px] p-7 md:p-8">
+      <section className="card-surface rounded-[36px] p-7 md:p-8 xl:sticky xl:top-28">
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <span className="eyebrow-pill text-sm font-semibold">分析工作台</span>
+              <h3 className="mt-4 text-2xl text-[var(--navy)]">先筛选，再提问，再读回答引用。</h3>
+            </div>
+            <p className="max-w-xs text-sm leading-7 text-[var(--muted)]">
+              如果你希望回答更稳定，建议把筛选条件收窄，让一组问题只分析一个清晰场景。
+            </p>
+          </div>
+
           <label className="block">
             <span className="text-sm font-semibold text-[var(--navy)]">问题</span>
             <textarea
@@ -269,7 +320,7 @@ export function GeneratedInsightsPanel() {
 
             <article className="surface-inset rounded-[26px] p-5">
               <h3 className="text-xl text-[var(--navy)]">关键点</h3>
-              <ul className="mt-3 space-y-2 text-sm leading-7 text-[var(--muted)]">
+              <ul className="editorial-list mt-3 space-y-2 text-sm leading-7 text-[var(--muted)]">
                 {result.key_points.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -278,7 +329,7 @@ export function GeneratedInsightsPanel() {
 
             <article className="surface-inset rounded-[26px] p-5">
               <h3 className="text-xl text-[var(--navy)]">使用提醒</h3>
-              <ul className="mt-3 space-y-2 text-sm leading-7 text-[var(--muted)]">
+              <ul className="editorial-list mt-3 space-y-2 text-sm leading-7 text-[var(--muted)]">
                 {result.caveats.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
