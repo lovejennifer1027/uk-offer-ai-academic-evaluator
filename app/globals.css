@@ -34,16 +34,42 @@ html {
 }
 
 body {
+  position: relative;
   margin: 0;
   min-height: 100vh;
   color: var(--ink);
   font-family: "Inter", "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   background:
-    radial-gradient(circle at 10% 0%, rgba(160, 189, 229, 0.22), transparent 26%),
-    radial-gradient(circle at 88% 10%, rgba(141, 139, 198, 0.18), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(176, 147, 100, 0.08), transparent 28%),
-    linear-gradient(180deg, #f7f4ee 0%, #fcfcfd 42%, #f6f4ef 100%);
+    radial-gradient(circle at 10% 0%, rgba(160, 189, 229, 0.26), transparent 26%),
+    radial-gradient(circle at 88% 10%, rgba(141, 139, 198, 0.2), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(176, 147, 100, 0.06), transparent 28%),
+    linear-gradient(180deg, #f6f4ef 0%, #fbfcfe 38%, #f5f3ee 100%);
   font-feature-settings: "liga" 1, "kern" 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.24) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.24) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.16), transparent 72%);
+  pointer-events: none;
+  opacity: 0.24;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto -8rem -8rem auto;
+  width: 26rem;
+  height: 26rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(141, 139, 198, 0.12), transparent 62%);
+  filter: blur(18px);
+  pointer-events: none;
 }
 
 h1,
@@ -83,18 +109,18 @@ textarea {
 }
 
 .page-container {
-  width: min(1200px, calc(100% - clamp(1.5rem, 4vw, 3rem)));
+  width: min(1248px, calc(100% - clamp(1.5rem, 4vw, 3rem)));
   margin-inline: auto;
 }
 
 .card-surface {
   border: 1px solid var(--line);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(251, 252, 254, 0.96)),
-    radial-gradient(circle at top right, var(--blue-soft), transparent 34%),
-    radial-gradient(circle at bottom left, var(--violet-soft), transparent 30%);
-  box-shadow: var(--shadow-soft);
-  backdrop-filter: blur(12px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(251, 252, 254, 0.88)),
+    radial-gradient(circle at top right, rgba(160, 189, 229, 0.18), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(141, 139, 198, 0.1), transparent 30%);
+  box-shadow: 0 20px 50px rgba(67, 84, 120, 0.07);
+  backdrop-filter: blur(18px);
   transition:
     transform 0.28s ease,
     box-shadow 0.28s ease,
@@ -104,8 +130,8 @@ textarea {
 
 .card-surface:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-card-hover);
-  border-color: rgba(141, 139, 198, 0.18);
+  box-shadow: 0 24px 60px rgba(72, 91, 128, 0.1);
+  border-color: rgba(141, 139, 198, 0.16);
 }
 
 .dark-panel {
@@ -127,9 +153,9 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 12% 8%, rgba(160, 189, 229, 0.26), transparent 26%),
-    radial-gradient(circle at 84% 18%, rgba(141, 139, 198, 0.22), transparent 20%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), transparent 72%);
+    radial-gradient(circle at 12% 8%, rgba(160, 189, 229, 0.28), transparent 26%),
+    radial-gradient(circle at 84% 18%, rgba(141, 139, 198, 0.2), transparent 20%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), transparent 72%);
   pointer-events: none;
 }
 
@@ -159,22 +185,24 @@ textarea {
   align-items: center;
   gap: 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(141, 139, 198, 0.16);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(141, 139, 198, 0.14);
+  background: rgba(255, 255, 255, 0.78);
   padding: 0.65rem 1rem;
   color: var(--navy);
-  box-shadow: 0 14px 32px rgba(67, 84, 120, 0.06);
+  box-shadow: 0 14px 30px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(16px);
 }
 
 .quiet-badge {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(59, 76, 107, 0.08);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(59, 76, 107, 0.07);
+  background: rgba(255, 255, 255, 0.76);
   color: var(--navy);
   padding: 0.72rem 1rem;
   border-radius: 999px;
-  box-shadow: 0 10px 24px rgba(67, 84, 120, 0.05);
+  box-shadow: 0 10px 24px rgba(67, 84, 120, 0.04);
+  backdrop-filter: blur(16px);
 }
 
 .luxury-button {
@@ -183,21 +211,24 @@ textarea {
   justify-content: center;
   border-radius: 999px;
   padding: 1rem 1.65rem;
-  border: 1px solid rgba(59, 76, 107, 0.1);
-  background: linear-gradient(180deg, var(--navy-soft), var(--navy));
+  border: 1px solid rgba(36, 53, 81, 0.08);
+  background:
+    linear-gradient(180deg, rgba(57, 79, 119, 0.96), rgba(36, 53, 81, 0.98)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14), transparent);
   color: white;
   font-weight: 650;
-  box-shadow: 0 16px 36px rgba(67, 84, 120, 0.14);
+  box-shadow: 0 18px 40px rgba(67, 84, 120, 0.14);
   transition:
     transform 0.24s ease,
     box-shadow 0.24s ease,
-    background 0.24s ease;
+    background 0.24s ease,
+    filter 0.24s ease;
 }
 
 .luxury-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 20px 42px rgba(67, 84, 120, 0.18);
-  background: linear-gradient(180deg, #3b537d, #283a5b);
+  box-shadow: 0 22px 46px rgba(67, 84, 120, 0.18);
+  filter: saturate(1.06);
 }
 
 .luxury-button:disabled {
@@ -212,11 +243,12 @@ textarea {
   justify-content: center;
   border-radius: 999px;
   padding: 1rem 1.65rem;
-  border: 1px solid rgba(59, 76, 107, 0.1);
-  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--navy);
   font-weight: 650;
-  box-shadow: 0 14px 28px rgba(67, 84, 120, 0.06);
+  box-shadow: 0 14px 28px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(16px);
   transition:
     transform 0.24s ease,
     border-color 0.24s ease,
@@ -302,10 +334,11 @@ textarea {
 .story-shell {
   border: 1px solid rgba(59, 76, 107, 0.08);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 253, 0.96)),
-    radial-gradient(circle at top right, rgba(160, 189, 229, 0.18), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(247, 249, 253, 0.82)),
+    radial-gradient(circle at top right, rgba(160, 189, 229, 0.2), transparent 36%),
     radial-gradient(circle at bottom left, rgba(141, 139, 198, 0.12), transparent 28%);
-  box-shadow: 0 24px 60px rgba(67, 84, 120, 0.09);
+  box-shadow: 0 26px 64px rgba(67, 84, 120, 0.08);
+  backdrop-filter: blur(20px);
 }
 
 .signal-bar {
@@ -388,9 +421,10 @@ textarea {
   position: relative;
   border-radius: 30px;
   border: 1px solid rgba(59, 76, 107, 0.08);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.82);
   padding: 1.6rem;
-  box-shadow: 0 12px 30px rgba(67, 84, 120, 0.05);
+  box-shadow: 0 16px 36px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(16px);
 }
 
 .process-step-number {
@@ -441,6 +475,47 @@ textarea {
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.6;
+}
+
+.site-header-shell {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.64);
+  box-shadow: 0 14px 34px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(22px);
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0.95rem 1rem;
+  box-shadow: 0 12px 24px rgba(67, 84, 120, 0.04);
+  backdrop-filter: blur(18px);
+}
+
+.nav-link {
+  border-radius: 999px;
+  padding: 0.7rem 0.95rem;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease;
+}
+
+.nav-link:hover {
+  background: rgba(160, 189, 229, 0.12);
+  color: var(--navy);
+  transform: translateY(-1px);
+}
+
+.footer-shell {
+  border: 1px solid rgba(59, 76, 107, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 16px 38px rgba(67, 84, 120, 0.05);
+  backdrop-filter: blur(18px);
 }
 
 @media (prefers-reduced-motion: reduce) {
