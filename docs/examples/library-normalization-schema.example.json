@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "record_type": {
+      "type": "string",
+      "enum": ["high_scoring_example", "rubric", "marker_feedback_pattern", "ignore"]
+    },
+    "university": { "type": ["string", "null"] },
+    "department": { "type": ["string", "null"] },
+    "programme_level": {
+      "type": ["string", "null"],
+      "enum": ["undergraduate", "masters", "phd", "unknown", null]
+    },
+    "assignment_type": {
+      "type": ["string", "null"],
+      "enum": ["essay", "dissertation", "report", "reflection", "proposal", "unknown", null]
+    },
+    "title": { "type": ["string", "null"] },
+    "exact_score": { "type": ["number", "null"] },
+    "score_band": { "type": ["string", "null"] },
+    "public_excerpt": { "type": ["string", "null"] },
+    "strengths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "weaknesses": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "marker_comments_summary": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "ai_summary": { "type": ["string", "null"] },
+    "rubric_name": { "type": ["string", "null"] },
+    "rubric_text": { "type": ["string", "null"] },
+    "score_ranges": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string" },
+          "minimum": { "type": ["number", "null"] },
+          "maximum": { "type": ["number", "null"] },
+          "descriptor": { "type": "string" }
+        },
+        "required": ["label", "minimum", "maximum", "descriptor"]
+      }
+    },
+    "feedback_type": {
+      "type": ["string", "null"],
+      "enum": ["strength", "weakness", "suggestion", null]
+    },
+    "feedback_text": { "type": ["string", "null"] },
+    "category": {
+      "type": ["string", "null"],
+      "enum": ["structure", "critical_thinking", "literature", "referencing", "language", "general", null]
+    },
+    "source_url": { "type": "string" },
+    "access_level": {
+      "type": "string",
+      "enum": ["public", "restricted", "unknown"]
+    }
+  },
+  "required": [
+    "record_type",
+    "university",
+    "department",
+    "programme_level",
+    "assignment_type",
+    "title",
+    "exact_score",
+    "score_band",
+    "public_excerpt",
+    "strengths",
+    "weaknesses",
+    "marker_comments_summary",
+    "ai_summary",
+    "rubric_name",
+    "rubric_text",
+    "score_ranges",
+    "feedback_type",
+    "feedback_text",
+    "category",
+    "source_url",
+    "access_level"
+  ]
+}
