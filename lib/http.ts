@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ZodError, type ZodType } from "zod";
+import { z, ZodError, type ZodTypeAny } from "zod";
 
 import { logServerError } from "@/lib/logger";
 
@@ -25,7 +25,7 @@ export function jsonError(message: string, status = 500, details?: unknown) {
   );
 }
 
-export async function parseJsonBody<T>(request: Request, schema: ZodType<T>) {
+export async function parseJsonBody<Schema extends ZodTypeAny>(request: Request, schema: Schema): Promise<z.infer<Schema>> {
   let body: unknown;
 
   try {
@@ -43,7 +43,7 @@ export async function parseJsonBody<T>(request: Request, schema: ZodType<T>) {
   return parsed.data;
 }
 
-export function parseSearchParams<T>(request: Request | string, schema: ZodType<T>) {
+export function parseSearchParams<Schema extends ZodTypeAny>(request: Request | string, schema: Schema): z.infer<Schema> {
   const url = typeof request === "string" ? request : request.url;
   const searchParams = new URL(url).searchParams;
   const record: Record<string, string | string[]> = {};
