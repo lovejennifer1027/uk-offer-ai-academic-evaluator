@@ -89,35 +89,36 @@ export function GeneratedExamplesWorkbench() {
   }
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[0.88fr_1.12fr] xl:items-start">
-      <section className="space-y-6">
-        <article className="card-surface rounded-[36px] p-7 md:p-8">
+    <div className="grid gap-8 xl:grid-cols-[0.8fr_1.2fr] xl:items-start">
+      <section className="space-y-6 xl:sticky xl:top-28">
+        <article className="modern-showcase p-6 md:p-7">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="reading-column">
+            <div>
               <span className="eyebrow-pill text-sm font-semibold">AI 实时生成</span>
-              <h2 className="mt-5 text-3xl text-[var(--navy)]">按学科、层级、类型和目标分数段生成高分写作示例。</h2>
+              <h2 className="mt-5 text-3xl text-[var(--navy)]">按一个清晰场景生成一组高分写作结果。</h2>
             </div>
-            <div className="rounded-[24px] border border-[var(--line)] bg-white/82 px-4 py-3 text-sm text-[var(--muted)]">
-              输出内容
-              <div className="mt-2 font-semibold text-[var(--navy)]">示句、段落、模板、说明</div>
-            </div>
+            <span className="signal-status">
+              <span className="signal-dot is-live" />
+              Live prompt
+            </span>
           </div>
-          <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
+
+          <p className="mt-5 text-sm leading-8 text-[var(--muted)]">
             这里不是公开来源库，而是 AI 实时生成的学习示例工作台。你可以现场生成高分示句、分析段落、表达模板和写法说明，再把结果积累起来供后续复盘与 insights 使用。
           </p>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            <div className="stat-tile">
+          <div className="mt-6 grid gap-4 md:grid-cols-3 xl:grid-cols-1">
+            <div className="mini-floating-card p-4">
               <div className="stat-tile-label">第一层</div>
-              <div className="stat-tile-value">生成高分写法</div>
+              <div className="mt-2 text-base font-semibold text-[var(--navy)]">生成高分写法</div>
             </div>
-            <div className="stat-tile">
+            <div className="mini-floating-card p-4">
               <div className="stat-tile-label">第二层</div>
-              <div className="stat-tile-value">保留本地积累</div>
+              <div className="mt-2 text-base font-semibold text-[var(--navy)]">保留本地积累</div>
             </div>
-            <div className="stat-tile">
+            <div className="mini-floating-card p-4">
               <div className="stat-tile-label">当前状态</div>
-              <div className="stat-tile-value">{history.length} 组已保存</div>
+              <div className="mt-2 text-base font-semibold text-[var(--navy)]">{history.length} 组已保存</div>
             </div>
           </div>
 
@@ -130,14 +131,14 @@ export function GeneratedExamplesWorkbench() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <span className="eyebrow-pill text-sm font-semibold">输入条件</span>
-              <h3 className="mt-4 text-2xl text-[var(--navy)]">先设定你想训练的写作场景。</h3>
+              <h3 className="mt-5 text-2xl text-[var(--navy)]">先设定你想训练的写作场景。</h3>
             </div>
             <p className="max-w-xs text-sm leading-7 text-[var(--muted)]">
               建议一次只聚焦一个任务类型和一个分数段，这样结果会更清晰，也更容易比较。
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="mt-6 grid gap-5 md:grid-cols-2">
             <label className="block">
               <span className="text-sm font-semibold text-[var(--navy)]">学科 / Subject</span>
               <input
@@ -210,11 +211,11 @@ export function GeneratedExamplesWorkbench() {
             </div>
           ) : null}
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button type="submit" className="luxury-button flex-1 text-sm" disabled={loading || !subject.trim()}>
+          <div className="mt-6 flex flex-col gap-3">
+            <button type="submit" className="luxury-button w-full text-sm" disabled={loading || !subject.trim()}>
               {loading ? "正在生成高分示例..." : "实时生成高分示例"}
             </button>
-            <Link href="/library/insights" className="luxury-button-muted flex-1 text-center text-sm">
+            <Link href="/library/insights" className="luxury-button-muted w-full text-center text-sm">
               用已积累样本继续分析
             </Link>
           </div>
@@ -224,7 +225,7 @@ export function GeneratedExamplesWorkbench() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <span className="eyebrow-pill text-sm font-semibold">积累层</span>
-              <h3 className="mt-4 text-2xl text-[var(--navy)]">最近生成的示例会留在当前浏览器里。</h3>
+              <h3 className="mt-5 text-2xl text-[var(--navy)]">最近生成的示例会留在当前浏览器里。</h3>
             </div>
             <div className="rounded-[22px] border border-[var(--line)] bg-white/82 px-4 py-3 text-right text-xs text-[var(--muted)]">
               <div>最近保留</div>
@@ -253,7 +254,8 @@ export function GeneratedExamplesWorkbench() {
                     <div>
                       <p className="text-sm font-semibold text-[var(--navy)]">{item.title}</p>
                       <p className="mt-2 text-xs text-[var(--muted)]">
-                        {item.subject} · {LIBRARY_PROGRAMME_LEVEL_LABELS[item.programme_level]} · {LIBRARY_ASSIGNMENT_TYPE_LABELS[item.assignment_type]} · {item.score_band}
+                        {item.subject} · {LIBRARY_PROGRAMME_LEVEL_LABELS[item.programme_level]} ·{" "}
+                        {LIBRARY_ASSIGNMENT_TYPE_LABELS[item.assignment_type]} · {item.score_band}
                       </p>
                     </div>
                     <span className="text-xs text-[var(--muted)]">{formatDate(item.createdAt)}</span>
@@ -265,22 +267,55 @@ export function GeneratedExamplesWorkbench() {
         </article>
       </section>
 
-      <section className="xl:sticky xl:top-28">
+      <section className="space-y-6">
         {result ? (
-          <div className="space-y-5">
-            <div className="section-panel rounded-[28px] px-5 py-4 text-sm leading-7 text-[var(--muted)]">
-              当前右侧是结果阅读区。建议先看顶部摘要和标签，再往下读示句、段落模板、表达模板和使用提醒，这样阅读会更顺。
-            </div>
+          <>
+            <article className="modern-showcase p-6 md:p-8">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="section-eyebrow text-sm font-semibold text-[var(--gold)]">结果阅读区</p>
+                  <h2 className="mt-4 text-2xl text-[var(--navy)] md:text-3xl">先看顶部摘要，再读示句、段落和模板。</h2>
+                </div>
+                <span className="signal-status">
+                  <span className="signal-dot is-live" />
+                  Current selection
+                </span>
+              </div>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-4">
+                <div className="mini-floating-card p-4">
+                  <div className="stat-tile-label">学科</div>
+                  <div className="mt-2 text-base font-semibold text-[var(--navy)]">{result.subject}</div>
+                </div>
+                <div className="mini-floating-card p-4">
+                  <div className="stat-tile-label">层级</div>
+                  <div className="mt-2 text-base font-semibold text-[var(--navy)]">
+                    {LIBRARY_PROGRAMME_LEVEL_LABELS[result.programme_level]}
+                  </div>
+                </div>
+                <div className="mini-floating-card p-4">
+                  <div className="stat-tile-label">类型</div>
+                  <div className="mt-2 text-base font-semibold text-[var(--navy)]">
+                    {LIBRARY_ASSIGNMENT_TYPE_LABELS[result.assignment_type]}
+                  </div>
+                </div>
+                <div className="mini-floating-card p-4">
+                  <div className="stat-tile-label">目标分数段</div>
+                  <div className="mt-2 text-base font-semibold text-[var(--navy)]">{result.score_band}</div>
+                </div>
+              </div>
+            </article>
+
             <GeneratedExampleCard example={result} />
-          </div>
+          </>
         ) : (
-          <div className="card-surface rounded-[36px] p-8 md:p-10">
+          <article className="hero-stage px-8 py-10 md:px-10 md:py-12">
             <span className="eyebrow-pill text-sm font-semibold">结果预览</span>
-            <h2 className="mt-5 text-3xl text-[var(--navy)]">这里会显示你刚生成的高分示句与段落模板。</h2>
-            <p className="mt-4 text-sm leading-8 text-[var(--muted)]">
+            <h2 className="mt-6 text-4xl text-[var(--navy)] md:text-5xl">这里会显示你刚生成的高分示句与段落模板。</h2>
+            <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)]">
               生成后你会看到示句、段落示例、表达模板、分析说明和使用提醒。所有内容都属于 AI 生成的学习示例，不会冒充真实大学官方材料。
             </p>
-          </div>
+          </article>
         )}
       </section>
     </div>

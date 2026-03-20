@@ -79,7 +79,7 @@ export default function ResultsPage() {
     <PageShell>
       <section className="page-container py-14 md:py-18">
         {loading ? (
-          <div role="status" aria-live="polite" className="card-surface rounded-[34px] p-8 text-sm text-[var(--muted)]">
+          <div role="status" aria-live="polite" className="hero-stage px-8 py-10 text-sm text-[var(--muted)]">
             正在加载评估报告...
           </div>
         ) : submission ? (
@@ -95,7 +95,7 @@ export default function ResultsPage() {
             <ResultSummary submission={submission} />
           </div>
         ) : (
-          <div role="alert" className="card-surface rounded-[38px] p-8">
+          <div role="alert" className="hero-stage px-8 py-10">
             <h1 className="text-4xl text-[var(--navy)]">报告暂不可用</h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)]">
               {error ?? "当前无法在 Supabase 或本地历史记录中找到这份报告。"}
