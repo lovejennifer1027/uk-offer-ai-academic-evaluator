@@ -203,38 +203,38 @@ export interface PaginatedResult<T> {
 }
 
 export interface ExampleListFilters extends LibraryPagination {
-  query?: string;
-  university_id?: string;
-  department?: string;
-  programme_level?: LibraryProgrammeLevel;
-  assignment_type?: LibraryAssignmentType;
-  score_band?: string;
+  query?: string | null;
+  university_id?: string | null;
+  department?: string | null;
+  programme_level?: LibraryProgrammeLevel | null;
+  assignment_type?: LibraryAssignmentType | null;
+  score_band?: string | null;
   verified_only?: boolean;
-  access_level?: LibraryAccessLevel;
+  access_level?: LibraryAccessLevel | null;
 }
 
 export interface RubricListFilters extends LibraryPagination {
-  query?: string;
-  university_id?: string;
-  department?: string;
-  programme_level?: string;
+  query?: string | null;
+  university_id?: string | null;
+  department?: string | null;
+  programme_level?: string | null;
   verified_only?: boolean;
 }
 
 export interface FeedbackListFilters extends LibraryPagination {
-  university_id?: string;
-  programme_level?: string;
-  feedback_type?: LibraryFeedbackType;
-  category?: LibraryFeedbackCategory;
+  university_id?: string | null;
+  programme_level?: string | null;
+  feedback_type?: LibraryFeedbackType | null;
+  category?: LibraryFeedbackCategory | null;
 }
 
 export interface LibrarySearchFilters extends LibraryPagination {
   query: string;
-  university_id?: string;
-  programme_level?: string;
-  assignment_type?: string;
-  access_level?: LibraryAccessLevel;
-  entity_type?: LibraryEmbeddingEntityType | "all";
+  university_id?: string | null;
+  programme_level?: string | null;
+  assignment_type?: string | null;
+  access_level?: LibraryAccessLevel | null;
+  entity_type?: LibraryEmbeddingEntityType | "all" | null;
 }
 
 export interface LibrarySearchResultItem {
