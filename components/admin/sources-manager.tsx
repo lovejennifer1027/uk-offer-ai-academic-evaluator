@@ -47,7 +47,8 @@ export function SourcesManager({ initialSources, universities }: SourcesManagerP
       return;
     }
 
-    setItems((current) => [payload.item!, ...current]);
+    const createdItem = payload.item;
+    setItems((current) => [createdItem, ...current]);
     setForm(emptySource);
     setMessage("Source 已创建。");
   }
@@ -68,8 +69,9 @@ export function SourcesManager({ initialSources, universities }: SourcesManagerP
       return;
     }
 
-    setItems((current) => current.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate)));
-    setMessage(`已保存 ${payload.item.name}。`);
+    const savedItem = payload.item;
+    setItems((current) => current.map((candidate) => (candidate.id === savedItem.id ? savedItem : candidate)));
+    setMessage(`已保存 ${savedItem.name}。`);
   }
 
   async function testCrawl(item: SourceSiteRecord) {

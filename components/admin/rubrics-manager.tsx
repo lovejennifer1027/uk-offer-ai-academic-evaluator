@@ -120,18 +120,19 @@ export function RubricsManager({ initialResult, universities }: RubricsManagerPr
       return;
     }
 
+    const savedItem = payload.item;
     setResult((current) => ({
       ...current,
-      items: current.items.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate))
+      items: current.items.map((candidate) => (candidate.id === savedItem.id ? savedItem : candidate))
     }));
     setJsonDrafts((current) => ({
       ...current,
-      [payload.item!.id]: {
-        score_ranges: JSON.stringify(payload.item!.score_ranges ?? [], null, 2),
-        rubric_json: JSON.stringify(payload.item!.rubric_json ?? {}, null, 2)
+      [savedItem.id]: {
+        score_ranges: JSON.stringify(savedItem.score_ranges ?? [], null, 2),
+        rubric_json: JSON.stringify(savedItem.rubric_json ?? {}, null, 2)
       }
     }));
-    setMessage(`已保存 ${payload.item.rubric_name ?? "评分标准"}。`);
+    setMessage(`已保存 ${savedItem.rubric_name ?? "评分标准"}。`);
   }
 
   async function verifyItem(item: RubricRecord) {
@@ -148,11 +149,12 @@ export function RubricsManager({ initialResult, universities }: RubricsManagerPr
       return;
     }
 
+    const verifiedItem = payload.item;
     setResult((current) => ({
       ...current,
-      items: current.items.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate))
+      items: current.items.map((candidate) => (candidate.id === verifiedItem.id ? verifiedItem : candidate))
     }));
-    setMessage(`已核验 ${payload.item.rubric_name ?? "评分标准"}。`);
+    setMessage(`已核验 ${verifiedItem.rubric_name ?? "评分标准"}。`);
   }
 
   return (

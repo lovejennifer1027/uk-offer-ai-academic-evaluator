@@ -48,7 +48,8 @@ export function UniversitiesManager({ initialUniversities }: UniversitiesManager
       return;
     }
 
-    setItems((current) => [...current, payload.item].sort((left, right) => left.name.localeCompare(right.name)));
+    const createdItem = payload.item;
+    setItems((current) => [...current, createdItem].sort((left, right) => left.name.localeCompare(right.name)));
     setCreateForm(emptyUniversity);
     setMessage("大学记录已创建。");
   }
@@ -69,8 +70,9 @@ export function UniversitiesManager({ initialUniversities }: UniversitiesManager
       return;
     }
 
-    setItems((current) => current.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate)));
-    setMessage(`已保存 ${payload.item.name}。`);
+    const savedItem = payload.item;
+    setItems((current) => current.map((candidate) => (candidate.id === savedItem.id ? savedItem : candidate)));
+    setMessage(`已保存 ${savedItem.name}。`);
   }
 
   return (

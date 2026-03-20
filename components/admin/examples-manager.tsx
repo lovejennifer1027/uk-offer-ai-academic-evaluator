@@ -80,11 +80,12 @@ export function ExamplesManager({ initialResult, universities }: ExamplesManager
       return;
     }
 
+    const savedItem = payload.item;
     setResult((current) => ({
       ...current,
-      items: current.items.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate))
+      items: current.items.map((candidate) => (candidate.id === savedItem.id ? savedItem : candidate))
     }));
-    setMessage(`已保存 ${payload.item.title ?? "示例"}。`);
+    setMessage(`已保存 ${savedItem.title ?? "示例"}。`);
   }
 
   async function verifyItem(item: HighScoringExampleRecord) {
@@ -104,11 +105,12 @@ export function ExamplesManager({ initialResult, universities }: ExamplesManager
       return;
     }
 
+    const verifiedItem = payload.item;
     setResult((current) => ({
       ...current,
-      items: current.items.map((candidate) => (candidate.id === payload.item!.id ? payload.item! : candidate))
+      items: current.items.map((candidate) => (candidate.id === verifiedItem.id ? verifiedItem : candidate))
     }));
-    setMessage(`已核验 ${payload.item.title ?? "示例"}。`);
+    setMessage(`已核验 ${verifiedItem.title ?? "示例"}。`);
   }
 
   return (
