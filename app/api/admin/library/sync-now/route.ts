@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       : await runLibrarySync({
           createdBy: body.created_by,
           triggerType: body.trigger_type,
-          deepSync: body.deep_sync
+          deepSync: body.deep_sync === true
         });
 
     return NextResponse.json({ result });

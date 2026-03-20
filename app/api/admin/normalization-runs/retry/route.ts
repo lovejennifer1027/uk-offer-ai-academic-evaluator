@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const body = await parseJsonBody(request, normalizationRetrySchema);
     const items = await retryNormalizationRuns(body.ids, body.status);
     const processed =
-      body.process_now && items.length > 0
+      body.process_now === true && items.length > 0
         ? await processNormalizationQueue({
             limit: items.length,
             ids: items.map((item) => item.id)
