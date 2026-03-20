@@ -2,17 +2,19 @@
 
 Premium academic web application for UK Offer International Education.
 
-This repository now contains two production-minded modules:
+This repository now contains two production-minded modules plus an optional accumulation foundation:
 
 1. `UK Offer AI Academic Evaluator`
-2. `UK Universities High-Scoring Writing Library`
+2. `UK Offer AI High-Scoring Writing Examples`
+3. `UK Universities High-Scoring Writing Library` infrastructure (optional source-backed accumulation layer)
 
-The evaluator handles formative essay scoring. The library module builds a continuously updated public knowledge layer of UK university writing examples, public rubric descriptors, and marker-feedback patterns.
+The evaluator handles formative essay scoring. The public writing-examples experience can now run in an AI-only mode: it generates high-scoring example sentences, paragraphs, templates, and follow-up insights in real time, while keeping a local browser accumulation layer for later analysis. The original source-backed library foundation, crawler, admin UI, and Supabase schema are still present for a later upgrade path.
 
 ## Product boundaries
 
 - This is not an official university marking system.
 - The writing library is not a piracy library.
+- AI-generated examples must be presented as AI-generated learning material, not as real university sample answers.
 - The public library only stores and displays public metadata, summaries, official rubric descriptors, short public excerpts where appropriate, source URLs, and access status.
 - The product does not imply university endorsement of UK Offer.
 
@@ -25,8 +27,8 @@ The evaluator handles formative essay scoring. The library module builds a conti
 - Server-side API routes
 - OpenAI Responses API with Structured Outputs
 - OpenAI embeddings API
-- Supabase / PostgreSQL
-- pgvector
+- Supabase / PostgreSQL (optional when using source-backed accumulation)
+- pgvector (optional when using source-backed accumulation)
 - Vercel-ready deployment
 
 ## Main capabilities
@@ -40,7 +42,21 @@ The evaluator handles formative essay scoring. The library module builds a conti
 - Strict JSON-schema output from OpenAI
 - Results page, history page, submission persistence
 
-### UK universities writing library
+### AI high-scoring writing examples
+
+- `/library/examples` now works as an AI-only real-time generation workspace
+- Users choose subject, level, assignment type, and target score band
+- The API returns:
+  - high-scoring example sentences
+  - a model paragraph
+  - expression templates
+  - analytical notes
+  - usage reminders
+- Generated packs are accumulated in browser local storage for later reuse
+- `/library/insights` analyzes those accumulated AI-generated packs instead of pretending to query a real-time university corpus
+- `/library/rubrics` can still surface rubric references from the optional source-backed layer
+
+### Optional source-backed accumulation layer
 
 - Universities table and source registry
 - Controlled crawler for HTML / PDF / DOCX source lists
@@ -57,11 +73,6 @@ The evaluator handles formative essay scoring. The library module builds a conti
   - marker_feedback_patterns
   - library_embeddings
 - Admin pages for sources, crawls, normalization, examples, rubrics, and sync
-- Public pages:
-  - `/library`
-  - `/library/examples`
-  - `/library/rubrics`
-  - `/library/insights`
 - Semantic search backed by pgvector
 - Source-backed insight synthesis using retrieved evidence only
 
@@ -97,6 +108,7 @@ uk-offer-ai-academic-evaluator/
 ├── docs/examples/
 ├── lib/
 │   ├── admin/
+│   ├── ai-library/
 │   ├── crawler/
 │   ├── jobs/
 │   ├── library/
@@ -125,13 +137,35 @@ For Vercel beginners, there is also a simplified Chinese deployment note:
 - [`DEPLOY_VERCEL_CN.md`](./DEPLOY_VERCEL_CN.md)
 - [` .env.vercel.example`](./.env.vercel.example)
 
-### Required for live evaluator + library AI features
+### Minimum for AI-only mode
 
 ```env
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-5.4
+OPENAI_EXAMPLE_GENERATION_MODEL=gpt-5.4
+OPENAI_EXAMPLE_INSIGHTS_MODEL=gpt-5.4
+
+UKOFFER_ADMIN_TOKEN=choose_a_long_random_admin_token
+```
+
+This is enough to run:
+
+- real-time essay scoring
+- real-time AI-generated high-scoring examples
+- browser-local accumulation
+- AI insights over accumulated examples
+
+### Additional variables for source-backed accumulation layer
+
+```env
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-5.4
+OPENAI_EXAMPLE_GENERATION_MODEL=gpt-5.4
+OPENAI_EXAMPLE_INSIGHTS_MODEL=gpt-5.4
 OPENAI_NORMALIZATION_MODEL=gpt-5.4-mini
 OPENAI_INSIGHTS_MODEL=gpt-5.4
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
@@ -148,7 +182,13 @@ UKOFFER_ADMIN_TOKEN=choose_a_long_random_admin_token
 ENABLE_DEMO_EVALUATION=true
 ```
 
-When `ENABLE_DEMO_EVALUATION=true` and `OPENAI_API_KEY` is not set, the essay evaluator still returns deterministic demo reports so the UI flow remains testable. The library module still renders seeded data without a live OpenAI key, but semantic embeddings and live normalization will be limited.
+When `ENABLE_DEMO_EVALUATION=true` and `OPENAI_API_KEY` is not set:
+
+- the essay evaluator still returns deterministic demo reports
+- `/library/examples` still returns deterministic AI-style demo packs
+- `/library/insights` still returns deterministic demo analysis over accumulated packs
+
+This keeps the AI-only UI flow testable before a live OpenAI key is added.
 
 ## Local setup
 
@@ -165,7 +205,7 @@ npm install
 cp .env.example .env.local
 ```
 
-4. Configure Supabase.
+4. If you want the source-backed accumulation layer, configure Supabase.
 
 If you use the SQL editor manually, run:
 
@@ -195,6 +235,12 @@ npm run dev
 
 - [http://localhost:3000](http://localhost:3000)
 - [http://localhost:3000/library](http://localhost:3000/library)
+
+If you are only testing the AI-only product path, you can skip the Supabase setup and still use:
+
+- `/evaluate`
+- `/library/examples`
+- `/library/insights`
 
 ## Admin access
 
@@ -279,6 +325,7 @@ The API key is never exposed client-side.
 
 ## Public library routes
 
+- `POST /api/library/examples/generate`
 - `GET /api/library/examples`
 - `GET /api/library/examples/[id]`
 - `GET /api/library/rubrics`

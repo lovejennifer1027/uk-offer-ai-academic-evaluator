@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
-import { handleApiError, parseJsonBody } from "@/lib/http";
+import { generatedInsightQuerySchema } from "@/lib/ai-library/schemas";
+import type { GeneratedInsightContextItem } from "@/lib/ai-library/types";
+import { generateDemoGeneratedInsights } from "@/lib/demo-ai-library";
+import { handleApiError, HttpError } from "@/lib/http";
 import { libraryInsightQuerySchema } from "@/lib/library/schemas";
 import { buildInsightEvidence, filterPublicLibrarySearchItems, lexicalSearchLibrary, matchLibraryEmbeddings } from "@/lib/library/repository";
+import { synthesizeGeneratedExampleInsights } from "@/lib/openai/generated-library";
 import { synthesizeLibraryInsights } from "@/lib/openai/normalize-page";
 import { createEmbedding } from "@/lib/openai/client";
 
@@ -28,9 +33,43 @@ function buildFallbackInsightAnswer(query: string, evidence: Awaited<ReturnType<
   };
 }
 
+function hasGeneratedExamples(value: unknown): value is { generated_examples: GeneratedInsightContextItem[] } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "generated_examples" in value &&
+    Array.isArray((value as { generated_examples?: unknown }).generated_examples)
+  );
+}
+
 export async function POST(request: Request) {
   try {
-    const body = await parseJsonBody(request, libraryInsightQuerySchema);
+    let rawBody: unknown;
+
+    try {
+      rawBody = (await request.json()) as unknown;
+    } catch (error) {
+      throw new HttpError("请求体不是有效的 JSON。", 400, error instanceof Error ? error.message : undefined);
+    }
+
+    if (hasGeneratedExamples(rawBody)) {
+      const body = generatedInsightQuerySchema.parse(rawBody);
+
+      if (!process.env.OPENAI_API_KEY) {
+        return NextResponse.json({
+          result: generateDemoGeneratedInsights(body.query, body.generated_examples),
+          prompt_version: "ai-library-demo-fallback"
+        });
+      }
+
+      const result = await synthesizeGeneratedExampleInsights(body.query, body.generated_examples);
+      return NextResponse.json({
+        result: result.answer,
+        prompt_version: result.prompt_version
+      });
+    }
+
+    const body = libraryInsightQuerySchema.parse(rawBody);
     const baseFilters = {
       page: 1,
       page_size: 8,
@@ -70,6 +109,10 @@ export async function POST(request: Request) {
     const result = await synthesizeLibraryInsights(body.query, evidence);
     return NextResponse.json(result);
   } catch (error) {
-    return handleApiError("library-insights-query", error, "暂时无法生成 insights 回答。");
+    return handleApiError(
+      "library-insights-query",
+      error instanceof ZodError ? new HttpError("请求参数无效。", 400, error.flatten()) : error,
+      "暂时无法生成 insights 回答。"
+    );
   }
 }

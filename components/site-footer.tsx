@@ -20,7 +20,7 @@ export function SiteFooter() {
             开始评估
           </Link>
           <Link href="/library" className="rounded-full px-3 py-2 transition hover:bg-[rgba(160,189,229,0.14)] hover:text-[var(--navy)]">
-            写作样本库
+            高分示例库
           </Link>
           <Link href="/history" className="rounded-full px-3 py-2 transition hover:bg-[rgba(160,189,229,0.14)] hover:text-[var(--navy)]">
             历史记录

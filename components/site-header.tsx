@@ -5,7 +5,7 @@ import { BRAND_NAME, ORGANISATION_NAME } from "@/lib/constants";
 const links = [
   { href: "/", label: "首页" },
   { href: "/evaluate", label: "开始评估" },
-  { href: "/library", label: "写作样本库" },
+  { href: "/library", label: "高分示例库" },
   { href: "/history", label: "历史记录" }
 ];
 

@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 import {
+  generatedExampleJsonSchema,
+  generatedExampleOutputSchema,
+  generatedInsightAnswerSchema,
+  generatedInsightJsonSchema
+} from "@/lib/ai-library/schemas";
+import {
   LIBRARY_ACCESS_LEVELS,
   LIBRARY_ASSIGNMENT_TYPES,
   LIBRARY_FEEDBACK_CATEGORIES,
@@ -282,3 +288,8 @@ export const insightSynthesisJsonSchema = {
   },
   required: ["answer", "key_points", "caveats", "evidence"]
 } as const;
+
+export const GeneratedExampleOutputSchema = generatedExampleOutputSchema;
+export const generatedExamplePackJsonSchema = generatedExampleJsonSchema;
+export const GeneratedInsightAnswerSchema = generatedInsightAnswerSchema;
+export const generatedInsightAnswerJsonSchema = generatedInsightJsonSchema;
