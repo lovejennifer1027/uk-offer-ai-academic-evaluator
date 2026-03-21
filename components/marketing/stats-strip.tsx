@@ -4,9 +4,9 @@ export function StatsStrip({ items }: { items: Array<{ value: string; label: str
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {items.map((item) => (
-        <Card key={item.value} className="rounded-[26px] bg-white/80 p-5">
-          <div className="text-3xl font-semibold tracking-[-0.04em] text-slate-950">{item.value}</div>
-          <p className="mt-2 text-sm text-slate-600">{item.label}</p>
+        <Card key={item.value} className="rounded-[28px] p-5 md:p-6">
+          <div className="text-[2rem] font-semibold tracking-[-0.05em] text-slate-950 md:text-[2.3rem]">{item.value}</div>
+          <p className="mt-2 text-sm leading-7 text-slate-600">{item.label}</p>
         </Card>
       ))}
     </div>

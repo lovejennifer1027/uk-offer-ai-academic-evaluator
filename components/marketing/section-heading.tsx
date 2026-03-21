@@ -11,9 +11,11 @@ export function SectionHeading({
 }) {
   return (
     <div className="max-w-3xl">
-      <Badge>{badge}</Badge>
-      <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-slate-950 md:text-4xl">{title}</h2>
-      {description ? <p className="mt-4 text-base leading-8 text-slate-600">{description}</p> : null}
+      <div className="eyebrow-pill">
+        <Badge>{badge}</Badge>
+      </div>
+      <h2 className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-slate-950 md:text-[2.65rem] md:leading-[1.08]">{title}</h2>
+      {description ? <p className="mt-5 text-base leading-8 text-slate-600 md:text-[1.05rem]">{description}</p> : null}
     </div>
   );
 }

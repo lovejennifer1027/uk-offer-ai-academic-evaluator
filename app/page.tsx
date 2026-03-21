@@ -19,11 +19,11 @@ export default async function HomePage() {
   const dict = getDictionary(locale);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f5f7ff_0%,#fafbff_35%,#f7f9fd_100%)]">
+    <div className="min-h-screen">
       <MarketingHeader locale={locale} nav={dict.nav} loginLabel={dict.ui.login} ctaLabel={dict.ui.startFreeEvaluation} />
 
       <main>
-        <section className="mx-auto max-w-7xl px-5 pb-16 pt-10 md:px-8 md:pb-24">
+        <section className="page-container pb-14 pt-8 md:pb-24 md:pt-10">
           <HeroSection
             locale={locale}
             title={dict.brand.tagline}
@@ -33,11 +33,11 @@ export default async function HomePage() {
           />
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-6 md:px-8 md:py-10">
+        <section className="page-container py-6 md:py-10">
           <StatsStrip items={dict.metrics} />
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <SectionHeading
             badge={locale === "en" ? "Core workflows" : "核心工作流"}
             title={locale === "en" ? "Six focused tools inside one calmer academic workspace." : "把六类核心能力放进同一个更清晰的学术工作台。"}
@@ -47,32 +47,34 @@ export default async function HomePage() {
                 : "ScholarDesk AI 面向评估、复盘与整理场景设计，保持与学术诚信要求兼容。"
             }
           />
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="story-shell mt-10 rounded-[38px] p-6 md:p-8">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {dict.features.map((feature) => (
               <FeatureCard key={feature.key} icon={feature.icon} title={feature.title} description={feature.description} />
             ))}
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <SectionHeading
             badge={locale === "en" ? "How it works" : "工作方式"}
             title={locale === "en" ? "Create a project, upload context, then run the workflow you need." : "先创建项目，再上传材料，最后运行需要的 AI 工作流。"}
           />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {dict.steps.map((step) => (
-              <Card key={step.step} className="rounded-[30px]">
-                <Badge>{step.step}</Badge>
+              <div key={step.step} className="process-step-card">
+                <div className="process-step-number">{step.step}</div>
                 <h3 className="mt-5 text-2xl font-semibold text-slate-950">{step.title}</h3>
                 <p className="mt-4 text-sm leading-7 text-slate-600">{step.description}</p>
-              </Card>
+              </div>
             ))}
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-            <Card className="rounded-[34px] bg-slate-950 p-8 text-white">
+            <Card className="dark-panel rounded-[38px] p-8 text-white">
               <Badge className="border-white/20 bg-white/10 text-white">{dict.ui.privacyTitle}</Badge>
               <h2 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">{locale === "en" ? "Designed for trust, not academic shortcuts." : "以可信赖为前提设计，而不是提供学术捷径。"}</h2>
               <div className="mt-6 space-y-4 text-sm leading-7 text-white/75">
@@ -104,7 +106,7 @@ export default async function HomePage() {
                       : "围绕上传材料进行检索，帮助 AI 回答更贴近项目上下文。"
                 }
               ].map((item) => (
-                <Card key={item.title} className="rounded-[30px]">
+                <Card key={item.title} className="rounded-[32px]">
                   <item.icon className="h-5 w-5 text-indigo-600" />
                   <h3 className="mt-5 text-xl font-semibold text-slate-950">{item.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-slate-600">{item.body}</p>
@@ -114,7 +116,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <SectionHeading badge={locale === "en" ? "Testimonials" : "示例反馈"} title={locale === "en" ? "Mock client-style reactions for the first version." : "面向第一版产品的示例型用户反馈。"} />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {dict.testimonials.map((item) => (
@@ -127,14 +129,14 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <SectionHeading badge={locale === "en" ? "FAQ" : "FAQ"} title={dict.ui.faqTitle} />
           <div className="mt-10">
             <FAQAccordion items={dict.faqs} />
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
+        <section className="page-container py-16 md:py-20">
           <SectionHeading badge={locale === "en" ? "Pricing" : "价格方案"} title={dict.ui.pricingTitle} />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {dict.pricing.map((tier) => (
@@ -143,8 +145,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-          <Card className="rounded-[36px] bg-[linear-gradient(135deg,rgba(15,23,42,0.98),rgba(55,65,81,0.96))] px-8 py-10 text-white">
+        <section className="page-container py-16 md:py-20">
+          <Card className="dark-panel rounded-[40px] px-8 py-10 text-white md:px-10 md:py-12">
             <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr] xl:items-center">
               <div>
                 <h2 className="text-4xl font-semibold tracking-[-0.05em]">{dict.ui.finalCtaTitle}</h2>

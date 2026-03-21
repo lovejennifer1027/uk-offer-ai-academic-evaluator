@@ -42,15 +42,17 @@ export default async function ToolsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f5f7ff_0%,#fbfcff_100%)]">
+    <div className="min-h-screen">
       <MarketingHeader locale={locale} nav={dict.nav} loginLabel={dict.ui.login} ctaLabel={dict.ui.startFreeEvaluation} />
-      <main className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-        <SectionHeading
-          badge={locale === "en" ? "Tool hub" : "工具中心"}
-          title={locale === "en" ? "Choose the workflow you need right now." : "按当前任务选择你需要的工作流。"}
-          description={locale === "en" ? "Each tool is designed for a focused academic support task." : "每个工具都围绕一个明确的学术支持任务设计。"}
-        />
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <main className="page-container py-10 md:py-16">
+        <section className="story-shell rounded-[38px] px-6 py-8 md:px-8 md:py-10">
+          <SectionHeading
+            badge={locale === "en" ? "Tool hub" : "工具中心"}
+            title={locale === "en" ? "Choose the workflow you need right now." : "按当前任务选择你需要的工作流。"}
+            description={locale === "en" ? "Each tool is designed for a focused academic support task." : "每个工具都围绕一个明确的学术支持任务设计。"}
+          />
+        </section>
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {toolCards.map((tool) => (
             <ToolCard key={tool.title} title={tool.title} description={tool.description} status={locale === "en" ? "Available" : "可用"} href={tool.href} />
           ))}

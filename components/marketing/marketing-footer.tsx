@@ -11,8 +11,8 @@ export function MarketingFooter({
   nav: Array<{ href: string; label: string }>;
 }) {
   return (
-    <footer className="border-t border-white/60 bg-white/70">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.1fr_0.75fr_0.75fr_0.8fr] md:px-8">
+    <footer className="px-3 pb-6 pt-10 md:px-5 md:pt-14">
+      <div className="footer-shell page-container grid gap-10 rounded-[34px] px-6 py-10 md:grid-cols-[1.1fr_0.75fr_0.75fr_0.8fr] md:px-8">
         <div>
           <div className="text-xl font-semibold text-slate-950">ScholarDesk AI</div>
           <p className="mt-4 max-w-md text-sm leading-7 text-slate-600">
