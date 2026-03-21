@@ -52,18 +52,18 @@ export function BriefAnalyzerForm({ language }: { language: ProjectLanguage }) {
         {result ? (
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             {[
-              ["Assignment type", [result.assignmentType]],
-              ["Expected structure", result.expectedStructure],
-              ["Key deliverables", result.keyDeliverables],
-              ["Marking priorities", result.markingPriorities],
-              ["Likely pitfalls", result.likelyPitfalls],
-              ["Recommended outline", result.recommendedOutline],
-              ["Suggested research questions", result.suggestedResearchQuestions]
-            ].map(([title, list]) => (
+              { title: "Assignment type", list: [result.assignmentType] },
+              { title: "Expected structure", list: result.expectedStructure },
+              { title: "Key deliverables", list: result.keyDeliverables },
+              { title: "Marking priorities", list: result.markingPriorities },
+              { title: "Likely pitfalls", list: result.likelyPitfalls },
+              { title: "Recommended outline", list: result.recommendedOutline },
+              { title: "Suggested research questions", list: result.suggestedResearchQuestions }
+            ].map(({ title, list }) => (
               <div key={title} className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
                 <div className="text-sm font-semibold text-slate-900">{title}</div>
                 <ul className="mt-3 space-y-2 text-sm leading-7 text-slate-600">
-                  {(list as string[]).map((item) => (
+                  {list.map((item) => (
                     <li key={item}>• {item}</li>
                   ))}
                 </ul>
