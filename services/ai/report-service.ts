@@ -87,8 +87,9 @@ export async function generateEvaluationReport(input: {
     maxOutputTokens: 2200
   });
 
+  const parsedReport = evaluationReportSchema.omit({ sourcesUsed: true }).parse(response.data);
   const jsonReport = evaluationReportSchema.parse({
-    ...response.data,
+    ...parsedReport,
     sourcesUsed: evidence
   });
   const overallScore = Math.round(
@@ -173,8 +174,9 @@ export async function generateKnowledgeAnswer(input: {
     maxOutputTokens: 1400
   });
 
+  const parsedAnswer = chatAnswerSchema.omit({ sourcesUsed: true }).parse(response.data);
   return chatAnswerSchema.parse({
-    ...response.data,
+    ...parsedAnswer,
     sourcesUsed: evidence
   });
 }
