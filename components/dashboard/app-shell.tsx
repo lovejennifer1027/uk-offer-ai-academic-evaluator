@@ -33,41 +33,30 @@ export function AppShell({
 }) {
   return (
     <div className="min-h-screen px-3 pb-3 pt-3 md:px-5">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1620px] gap-4 lg:grid-cols-[292px_minmax(0,1fr)]">
-        <aside className="story-shell hidden rounded-[34px] px-5 py-6 lg:block">
-          <Link href="/" className="flex items-center gap-3 rounded-[28px] bg-[linear-gradient(135deg,#20283e,#3b4e7a)] px-4 py-4 text-white shadow-[0_20px_40px_rgba(31,42,68,0.22)]">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/12 font-semibold">SD</div>
-            <div>
-              <div className="text-sm font-semibold">ScholarDesk AI</div>
-              <div className="text-xs text-white/70">{locale === "en" ? "Academic support" : "学术支持"}</div>
-            </div>
-          </Link>
+      <div className="mx-auto flex min-h-screen w-full max-w-[1620px] flex-col gap-4">
+        <header className="site-header-shell sticky top-3 z-30 rounded-[34px]">
+          <div className="px-5 py-5 md:px-6">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-3 rounded-[28px] bg-[linear-gradient(135deg,#20283e,#3b4e7a)] px-4 py-4 text-white shadow-[0_20px_40px_rgba(31,42,68,0.22)]"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/12 font-semibold">SD</div>
+                    <div>
+                      <div className="text-sm font-semibold">ScholarDesk AI</div>
+                      <div className="text-xs text-white/70">{locale === "en" ? "Academic support" : "学术支持"}</div>
+                    </div>
+                  </Link>
 
-          <nav className="mt-8 space-y-2">
-            {sidebarItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-[22px] px-4 py-3 text-sm font-medium text-slate-600 transition duration-200 hover:bg-white/88 hover:text-slate-950 hover:shadow-[0_12px_28px_rgba(15,23,42,0.05)]"
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                <span>{locale === "en" ? item.label.en : item.label.zh}</span>
-              </Link>
-            ))}
-          </nav>
-        </aside>
-
-        <div className="flex min-w-0 flex-col">
-          <header className="site-header-shell sticky top-3 z-30 rounded-[30px]">
-            <div className="px-5 py-4 md:px-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <div className="text-sm text-slate-500">{locale === "en" ? "Workspace" : "工作台"}</div>
-                  <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{title}</h1>
+                  <div>
+                    <div className="text-sm text-slate-500">{locale === "en" ? "Workspace" : "工作台"}</div>
+                    <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{title}</h1>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex flex-wrap items-center gap-3">
                   <LanguageSwitcher locale={locale} />
                   <div className="hidden rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm text-slate-600 md:block">
                     {userName}
@@ -79,25 +68,29 @@ export function AppShell({
                 </div>
               </div>
 
-              <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+              <nav className="flex gap-2 overflow-x-auto pb-1">
                 {sidebarItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="whitespace-nowrap rounded-full border border-white/80 bg-white/86 px-4 py-2 text-sm font-medium text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:text-slate-950"
+                    className={cn(
+                      "inline-flex shrink-0 items-center gap-2 rounded-full border border-white/80 bg-white/86 px-4 py-2.5 text-sm font-medium text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:text-slate-950"
+                    )}
                   >
-                    {locale === "en" ? item.label.en : item.label.zh}
+                    <item.icon className="h-4 w-4" />
+                    <span>{locale === "en" ? item.label.en : item.label.zh}</span>
                   </Link>
                 ))}
               </nav>
             </div>
-          </header>
-          <main className="min-w-0 flex-1 py-4">
-            <div className="story-shell min-h-full rounded-[34px] px-5 py-6 md:px-6 md:py-7">
-              {children}
-            </div>
-          </main>
-        </div>
+          </div>
+        </header>
+
+        <main className="min-w-0 flex-1">
+          <div className="story-shell min-h-full rounded-[34px] px-5 py-6 md:px-6 md:py-7">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );
