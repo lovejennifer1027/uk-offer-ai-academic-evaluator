@@ -328,141 +328,139 @@ export default function AnalyzeBriefWorkspace() {
           </div>
         </motion.div>
 
-        <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <div className="space-y-6">
-            <SurfaceCard>
-              <div className="p-6">
-                <SectionHeading
-                  icon={ShieldCheck}
-                  eyebrow="Automatic matching"
-                  title="1. 已自动匹配学校要求"
-                  description="系统会先根据学校、项目和层级设定当前示例生成标准。"
-                />
+        <div className="mx-auto max-w-6xl space-y-6">
+          <SurfaceCard>
+            <div className="p-6">
+              <SectionHeading
+                icon={ShieldCheck}
+                eyebrow="Automatic matching"
+                title="1. 已自动匹配学校要求"
+                description="系统会先根据学校、项目和层级设定当前示例生成标准。"
+              />
 
-                <div className="mt-6 space-y-4">
-                  <div className="grid gap-4">
-                    <SettingField label="学校" value={selectedSchool} onChange={setSelectedSchool} options={schools} />
-                    <SettingField label="项目" value={selectedProject} onChange={setSelectedProject} options={projects} />
-                    <SettingField label="层级" value={selectedLevel} onChange={setSelectedLevel} options={levels} />
-                  </div>
+              <div className="mt-6 space-y-4">
+                <div className="grid gap-4">
+                  <SettingField label="学校" value={selectedSchool} onChange={setSelectedSchool} options={schools} />
+                  <SettingField label="项目" value={selectedProject} onChange={setSelectedProject} options={projects} />
+                  <SettingField label="层级" value={selectedLevel} onChange={setSelectedLevel} options={levels} />
+                </div>
 
-                  <div className="grid gap-4">
-                    {requirementCards.map((item, index) => (
-                      <MatchCard
-                        key={item.title}
-                        title={item.title}
-                        icon={item.icon}
-                        accent={item.accent}
-                        delay={0.1 + index * 0.06}
-                      />
-                    ))}
-                  </div>
+                <div className="grid gap-4">
+                  {requirementCards.map((item, index) => (
+                    <MatchCard
+                      key={item.title}
+                      title={item.title}
+                      icon={item.icon}
+                      accent={item.accent}
+                      delay={0.1 + index * 0.06}
+                    />
+                  ))}
                 </div>
               </div>
-            </SurfaceCard>
+            </div>
+          </SurfaceCard>
 
-            <SurfaceCard>
-              <div className="p-6">
-                <SectionHeading
-                  icon={Lightbulb}
-                  eyebrow="Student input"
-                  title="2. 输入作业要求与 rubric / 学生思路"
-                  description="保留输入区和上传区，让学生可以把 prompt、评分标准和自己的想法放进同一个工作区。"
-                />
+          <SurfaceCard>
+            <div className="p-6">
+              <SectionHeading
+                icon={Lightbulb}
+                eyebrow="Student input"
+                title="2. 输入作业要求与 rubric / 学生思路"
+                description="保留输入区和上传区，让学生可以把 prompt、评分标准和自己的想法放进同一个工作区。"
+              />
 
-                <div className="mt-6 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-                  <div className="space-y-4">
-                    <motion.div whileHover={{ y: -2 }} className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-                      <div className="mb-3 flex items-center justify-between">
-                        <span className="text-sm font-medium text-slate-700">Assignment prompt / 学生思路</span>
-                        <span className="text-xs text-slate-500">{promptWordCount} words</span>
-                      </div>
-                      <Textarea
-                        value={assignmentPrompt}
-                        onChange={(event) => setAssignmentPrompt(event.target.value)}
-                        className="min-h-[240px] resize-none rounded-[24px] border-0 bg-white p-5 text-sm leading-7 shadow-none focus-visible:ring-1"
-                        placeholder="粘贴 assignment prompt、老师要求，或者先写学生自己的想法。"
-                      />
-                    </motion.div>
+              <div className="mt-6 grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
+                <div className="space-y-4">
+                  <motion.div whileHover={{ y: -2 }} className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-medium text-slate-700">Assignment prompt / 学生思路</span>
+                      <span className="text-xs text-slate-500">{promptWordCount} words</span>
+                    </div>
+                    <Textarea
+                      value={assignmentPrompt}
+                      onChange={(event) => setAssignmentPrompt(event.target.value)}
+                      className="min-h-[240px] resize-none rounded-[24px] border-0 bg-white p-5 text-sm leading-7 shadow-none focus-visible:ring-1"
+                      placeholder="粘贴 assignment prompt、老师要求，或者先写学生自己的想法。"
+                    />
+                  </motion.div>
 
-                    <motion.div whileHover={{ y: -2 }} className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-                      <div className="mb-3 text-sm font-medium text-slate-700">Rubric / grading criteria</div>
-                      <Textarea
-                        value={rubricText}
-                        onChange={(event) => setRubricText(event.target.value)}
-                        className="min-h-[180px] resize-none rounded-[24px] border-0 bg-white p-5 text-sm leading-7 shadow-none focus-visible:ring-1"
-                        placeholder="粘贴学校 rubric、评分标准、老师反馈重点或 grading criteria。"
-                      />
-                    </motion.div>
-                  </div>
+                  <motion.div whileHover={{ y: -2 }} className="rounded-[28px] border border-slate-200 bg-slate-50 p-4">
+                    <div className="mb-3 text-sm font-medium text-slate-700">Rubric / grading criteria</div>
+                    <Textarea
+                      value={rubricText}
+                      onChange={(event) => setRubricText(event.target.value)}
+                      className="min-h-[180px] resize-none rounded-[24px] border-0 bg-white p-5 text-sm leading-7 shadow-none focus-visible:ring-1"
+                      placeholder="粘贴学校 rubric、评分标准、老师反馈重点或 grading criteria。"
+                    />
+                  </motion.div>
+                </div>
 
-                  <div className="space-y-4">
+                <div className="space-y-4">
+                  <motion.div
+                    whileHover={{ y: -3, scale: 1.01 }}
+                    className="group relative overflow-hidden rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-6"
+                  >
                     <motion.div
-                      whileHover={{ y: -3, scale: 1.01 }}
-                      className="group relative overflow-hidden rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-6"
-                    >
-                      <motion.div
-                        className="absolute inset-x-6 top-0 h-1 rounded-full bg-gradient-to-r from-sky-400 via-violet-400 to-emerald-400"
-                        animate={{ opacity: [0.6, 1, 0.6] }}
-                        transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-                      />
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="text-base font-semibold text-slate-900">上传学生文件</div>
-                          <div className="mt-2 text-sm leading-6 text-slate-600">
-                            支持草稿、老师反馈、课堂笔记和作业要求文件。
-                          </div>
-                        </div>
-                        <Badge className="rounded-full border border-slate-200 bg-white text-[11px] text-slate-600 shadow-none">
-                          UI placeholder
-                        </Badge>
-                      </div>
-
-                      <div className="mt-5 rounded-[24px] border border-slate-200 bg-white px-4 py-4 shadow-sm">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
-                            <Upload className="h-5 w-5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="text-sm font-semibold text-slate-900">拖拽或点击上传</div>
-                            <div className="truncate text-xs text-slate-500">支持 PDF / DOCX / TXT / Markdown</div>
-                          </div>
-                          <Button type="button" variant="secondary" className="rounded-2xl px-4 py-2.5">
-                            选择文件
-                          </Button>
+                      className="absolute inset-x-6 top-0 h-1 rounded-full bg-gradient-to-r from-sky-400 via-violet-400 to-emerald-400"
+                      animate={{ opacity: [0.6, 1, 0.6] }}
+                      transition={{ duration: 2.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                    />
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-base font-semibold text-slate-900">上传学生文件</div>
+                        <div className="mt-2 text-sm leading-6 text-slate-600">
+                          支持草稿、老师反馈、课堂笔记和作业要求文件。
                         </div>
                       </div>
-                    </motion.div>
+                      <Badge className="rounded-full border border-slate-200 bg-white text-[11px] text-slate-600 shadow-none">
+                        UI placeholder
+                      </Badge>
+                    </div>
 
-                    <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium text-slate-700">这页会输出什么</div>
-                        <Badge className="rounded-full border border-slate-200 bg-white text-[11px] text-slate-600 shadow-none">
-                          Example engine
-                        </Badge>
+                    <div className="mt-5 rounded-[24px] border border-slate-200 bg-white px-4 py-4 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+                          <Upload className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-semibold text-slate-900">拖拽或点击上传</div>
+                          <div className="truncate text-xs text-slate-500">支持 PDF / DOCX / TXT / Markdown</div>
+                        </div>
+                        <Button type="button" variant="secondary" className="rounded-2xl px-4 py-2.5">
+                          选择文件
+                        </Button>
                       </div>
-                      <div className="mt-4 grid gap-3">
-                        {[
-                          "根据学校、项目和层级匹配写作口径",
-                          "按 50+ / 60+ / 70+ 三档展示范本",
-                          "帮助学生看清结构、表达和分析深度差异"
-                        ].map((item) => (
-                          <div
-                            key={item}
-                            className="rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-600"
-                          >
-                            {item}
-                          </div>
-                        ))}
-                      </div>
+                    </div>
+                  </motion.div>
+
+                  <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium text-slate-700">这页会输出什么</div>
+                      <Badge className="rounded-full border border-slate-200 bg-white text-[11px] text-slate-600 shadow-none">
+                        Example engine
+                      </Badge>
+                    </div>
+                    <div className="mt-4 grid gap-3">
+                      {[
+                        "根据学校、项目和层级匹配写作口径",
+                        "按 50+ / 60+ / 70+ 三档展示范本",
+                        "帮助学生看清结构、表达和分析深度差异"
+                      ].map((item) => (
+                        <div
+                          key={item}
+                          className="rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-600"
+                        >
+                          {item}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
-            </SurfaceCard>
-          </div>
+            </div>
+          </SurfaceCard>
 
-          <SurfaceCard className="xl:sticky xl:top-6">
+          <SurfaceCard>
             <div className="relative overflow-hidden p-6">
               <motion.div
                 className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-violet-500 via-sky-400 to-emerald-400"
