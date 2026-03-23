@@ -23,7 +23,6 @@ import { SourceCitationPanel } from "@/components/dashboard/source-citation-pane
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, wordCount } from "@/lib/utils";
@@ -82,13 +81,6 @@ interface UploadPayload {
     extractedText?: string;
     filename?: string;
   };
-}
-
-function dimensionTone(score: number) {
-  if (score >= 80) return "优秀";
-  if (score >= 70) return "较强";
-  if (score >= 60) return "合格";
-  return "需加强";
 }
 
 function FloatingOrb({
@@ -525,8 +517,8 @@ export function EvaluationWorkspace({
       <FloatingOrb className="pointer-events-none absolute right-0 top-0 -z-10 h-80 w-80 rounded-full bg-sky-200/20 blur-3xl" duration={13} x={-18} y={14} />
       <FloatingOrb className="pointer-events-none absolute left-1/3 top-1/2 -z-10 h-56 w-56 rounded-full bg-violet-200/15 blur-3xl" duration={15} x={12} y={18} />
 
-      <div className="grid gap-6 xl:grid-cols-12">
-        <div className="space-y-6 xl:col-span-7">
+      <div className="space-y-6">
+        <div className="space-y-6">
           <motion.section
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -555,11 +547,6 @@ export function EvaluationWorkspace({
                     </div>
                   ))}
                 </div>
-
-                <div className="mt-6 flex flex-wrap gap-2 text-sm text-slate-300">
-                  <div className="rounded-full border border-white/10 bg-white/8 px-3 py-2">{projectTitle}</div>
-                  <div className="rounded-full border border-white/10 bg-white/8 px-3 py-2">{moduleCode}</div>
-                </div>
               </div>
 
               <div className="rounded-[28px] border border-white/10 bg-white/8 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-sm">
@@ -578,7 +565,182 @@ export function EvaluationWorkspace({
             </div>
           </motion.section>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <SurfaceCard>
+            <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-6 py-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+                      <BarChart3 className="h-[18px] w-[18px] text-slate-700" />
+                    </div>
+                    评估结果
+                  </div>
+                  <div className="mt-1 text-sm leading-6 text-slate-500">右侧结果区改成独立模块，先看总分，再看分项和依据，阅读顺序更清楚。</div>
+                </div>
+                <motion.div
+                  animate={loading ? { scale: [1, 1.06, 1], opacity: [0.7, 1, 0.7] } : { scale: 1, opacity: 1 }}
+                  transition={{ duration: 1, repeat: loading ? Number.POSITIVE_INFINITY : 0 }}
+                >
+                  <Badge className="rounded-full border border-slate-200 bg-white px-3 text-[11px] text-slate-600 hover:bg-white">
+                    {loading ? "Analyzing" : "Live preview"}
+                  </Badge>
+                </motion.div>
+              </div>
+            </div>
+
+            <div className="space-y-5 p-6">
+              <motion.div
+                key={resultsVersion}
+                initial={{ opacity: 0, y: 14, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.45 }}
+                className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_100%)] p-5 text-white shadow-[0_12px_30px_rgba(15,23,42,0.16)]"
+              >
+                <motion.div
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.55, 0.3] }}
+                  transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                />
+
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 text-sm text-slate-300">
+                      <BarChart3 className="h-4 w-4" />
+                      Overall evaluation
+                    </div>
+                    <div className="mt-2 flex items-end gap-3">
+                      <div className="text-5xl font-semibold tracking-tight">
+                        <AnimatedNumber value={overallScore} version={resultsVersion} />
+                      </div>
+                      <div className="mb-1 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] text-slate-200">
+                        score / 100
+                      </div>
+                    </div>
+                    <div className="mt-2 text-sm text-slate-300">
+                      {overallScore >= 80 ? "Upper Merit, close to Distinction threshold" : "Solid working draft with clear improvement space"}
+                    </div>
+                  </div>
+
+                  <div className="rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-right text-sm">
+                    <div>{schoolProfile.name}</div>
+                    <div className="mt-1 text-slate-300">{studyRoute} pathway</div>
+                  </div>
+                </div>
+
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                  {[
+                    { label: "Coverage", value: result ? `${Math.min(98, 82 + result.jsonReport.sourcesUsed.length * 2)}%` : "92%" },
+                    { label: "Confidence", value: result ? "High" : "Preview" },
+                    { label: "Status", value: loading ? "Updating" : result ? "Ready" : "Draft" }
+                  ].map((item) => (
+                    <div key={`${item.label}-${item.value}`} className="rounded-2xl border border-white/10 bg-white/6 px-3 py-3">
+                      <div className="text-[11px] text-slate-300">{item.label}</div>
+                      <div className="mt-1 text-sm font-medium text-white">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <div className="grid h-12 w-full grid-cols-3 rounded-[18px] border border-slate-200 bg-slate-50 p-1">
+                <ResultTabButton tab="breakdown" activeTab={activeTab} onClick={setActiveTab}>
+                  Breakdown
+                </ResultTabButton>
+                <ResultTabButton tab="priorities" activeTab={activeTab} onClick={setActiveTab}>
+                  Priorities
+                </ResultTabButton>
+                <ResultTabButton tab="evidence" activeTab={activeTab} onClick={setActiveTab}>
+                  Evidence
+                </ResultTabButton>
+              </div>
+
+              {activeTab === "breakdown" ? (
+                <div className="space-y-3">
+                  {displayedScores.map((item, index) => (
+                    <AnimatedBar
+                      key={`${item.label}-${resultsVersion}`}
+                      label={item.label}
+                      value={item.value}
+                      hint={item.hint}
+                      delay={index * 0.08}
+                      version={resultsVersion}
+                    />
+                  ))}
+                </div>
+              ) : null}
+
+              {activeTab === "priorities" ? (
+                <div className="space-y-3">
+                  {(result?.jsonReport.priorityImprovements.length
+                    ? result.jsonReport.priorityImprovements.map((item, index) => ({
+                        title: `优先修改项 ${index + 1}`,
+                        detail: item,
+                        level: index < 2 ? "高优先级" : "中优先级"
+                      }))
+                    : previewPriorities
+                  ).map((item, index) => (
+                    <motion.div
+                      key={`${item.title}-${index}`}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.08 }}
+                      whileHover={{ y: -2 }}
+                      className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_2px_10px_rgba(15,23,42,0.03)]"
+                    >
+                      <div className="flex items-start gap-3">
+                        <motion.div
+                          animate={{ scale: [1, 1.06, 1] }}
+                          transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, delay: index * 0.2 }}
+                          className="mt-0.5 rounded-full bg-amber-100 p-2 text-amber-700"
+                        >
+                          <AlertCircle className="h-4 w-4" />
+                        </motion.div>
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <div className="font-medium text-slate-900">{item.title}</div>
+                            <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700 shadow-none">
+                              {item.level}
+                            </Badge>
+                          </div>
+                          <div className="mt-2 text-sm leading-6 text-slate-600">{item.detail}</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : null}
+
+              {activeTab === "evidence" ? (
+                <div className="space-y-3">
+                  {(result?.jsonReport.sourcesUsed.length
+                    ? result.jsonReport.sourcesUsed.map((item) => item.filename)
+                    : previewEvidence
+                  ).map((item, index) => (
+                    <motion.div
+                      key={`${item}-${index}`}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.07 }}
+                      whileHover={{ x: 3 }}
+                      className="flex items-center justify-between rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_2px_10px_rgba(15,23,42,0.03)]"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="rounded-2xl bg-slate-100 p-2">
+                          <BookOpen className="h-4 w-4 text-slate-700" />
+                        </div>
+                        <div className="truncate text-sm font-medium text-slate-800">{item}</div>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs font-medium text-slate-400">
+                        Linked
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </SurfaceCard>
+
+          <div className="grid gap-6 xl:grid-cols-2">
             <SurfaceCard>
               <div className="p-6">
                 <CardHeading
@@ -587,7 +749,7 @@ export function EvaluationWorkspace({
                   description="学校、路径和学历层级会一起决定系统匹配的评估标准。"
                 />
                 <div className="space-y-4">
-                  <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_180px]">
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_220px_220px]">
                     <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
                       <div className="mb-2 text-sm font-medium text-slate-900">学校</div>
                       <Select value={selectedSchool} onChange={(event) => setSelectedSchool(event.target.value)} className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm">
@@ -613,23 +775,36 @@ export function EvaluationWorkspace({
                         ))}
                       </Select>
                     </div>
+
+                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                      <div className="mb-2 text-sm font-medium text-slate-900">学历层级</div>
+                      <Select
+                        value={targetLevel}
+                        onChange={(event) => setTargetLevel(event.target.value)}
+                        className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
+                      >
+                        {["Bachelor", "Master", "PhD"].map((level) => (
+                          <option key={level} value={level}>
+                            {level}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px_220px]">
                     <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">评估语言</div>
+                      <div className="mb-2 text-sm font-medium text-slate-900">当前项目</div>
                       <div className="flex h-11 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm">
-                        {language === "zh" ? "中文" : language === "bilingual" ? "中英双语" : "English"}
+                        {projectTitle}
                       </div>
                     </div>
 
                     <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">学历层级</div>
-                      <Input
-                        value={targetLevel}
-                        onChange={(event) => setTargetLevel(event.target.value)}
-                        className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
-                      />
+                      <div className="mb-2 text-sm font-medium text-slate-900">模块代码</div>
+                      <div className="flex h-11 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm">
+                        {moduleCode}
+                      </div>
                     </div>
 
                     <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
@@ -646,6 +821,13 @@ export function EvaluationWorkspace({
                         ))}
                       </Select>
                     </div>
+                  </div>
+
+                  <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
+                    当前评估语言：
+                    <span className="ml-2 font-medium text-slate-900">
+                      {language === "zh" ? "中文" : language === "bilingual" ? "中英双语" : "English"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -688,9 +870,14 @@ export function EvaluationWorkspace({
                     ))}
                   </div>
 
-                  <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
-                    {schoolProfile.supportNote}
-                  </div>
+                  <UploadSurface
+                    slot="rubric"
+                    title="上传要求文件"
+                    description="支持 rubric、brief、老师要求、lecture notes 或 module handbook。"
+                    status={rubricUploadState}
+                    onDrop={handleDrop}
+                    onSelect={handleSelect}
+                  />
                 </div>
               </div>
             </SurfaceCard>
@@ -700,54 +887,28 @@ export function EvaluationWorkspace({
             <div className="p-6">
               <CardHeading
                 icon={FileText}
-                title="论文与要求输入"
-                description="左边继续做输入，右边只负责看结果。结构和你发的这版保持一致。"
+                title="论文输入"
+                description="正文输入放上面，辅助上传和解析信息放右边，格式保持整齐。"
               />
-              <div className="grid gap-5 lg:grid-cols-[1.2fr_0.95fr]">
-                <div className="space-y-5">
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.32fr)_420px]">
+                <div className="space-y-3">
                   <div className="rounded-[26px] border border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.9),rgba(255,255,255,1))] p-5 shadow-inner">
-                    <div className="mb-3 flex items-center justify-between gap-4">
-                      <div>
-                        <div className="text-sm font-medium text-slate-900">论文内容</div>
-                        <div className="mt-1 text-sm leading-6 text-slate-500">在这里粘贴论文正文，或者用右侧上传同步文本。</div>
-                      </div>
-                      <Badge className="rounded-full border border-slate-200 bg-white px-3 text-[11px] text-slate-600 shadow-none">
-                        {wordTotal} words
-                      </Badge>
+                    <div className="mb-3 text-sm leading-6 text-slate-500">
+                      把学生论文正文粘贴到这里，系统会自动识别结构、统计字数，并进入评估上下文。
                     </div>
                     <Textarea
                       value={paperText}
                       onChange={(event) => setPaperText(event.target.value)}
-                      className="min-h-[280px] rounded-[22px] border-slate-200 bg-white p-5 text-sm leading-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] focus-visible:ring-slate-300"
+                      className="min-h-[360px] rounded-[22px] border-slate-200 bg-white p-5 text-sm leading-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] focus-visible:ring-slate-300"
                       placeholder="把学生论文正文粘贴到这里，系统会自动识别结构、统计字数，并进入评估上下文。"
                     />
-                    <div className="mt-3 flex items-center justify-between rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">
-                      <span className="flex items-center">
-                        <Dot className="-ml-2 mr-0.5 h-4 w-4" />
-                        自动进入学校匹配评估流程
-                      </span>
-                      <span>支持自动提取正文与基础结构</span>
-                    </div>
                   </div>
-
-                  <div className="rounded-[26px] border border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.9),rgba(255,255,255,1))] p-5 shadow-inner">
-                    <div className="mb-3">
-                      <div className="text-sm font-medium text-slate-900">学校要求与评分标准</div>
-                      <div className="mt-1 text-sm leading-6 text-slate-500">把 rubric、brief、老师要求和课程重点集中放在这里。</div>
-                    </div>
-                    <Textarea
-                      value={rubricText}
-                      onChange={(event) => setRubricText(event.target.value)}
-                      className="min-h-[220px] rounded-[22px] border-slate-200 bg-white p-5 text-sm leading-7 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] focus-visible:ring-slate-300"
-                      placeholder="把 rubric、assignment brief、老师评估要求或课程重点粘贴到这里。"
-                    />
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {schoolProfile.focusAreas.map((area) => (
-                        <Badge key={area} className="rounded-full border border-slate-200 bg-white px-3 text-[11px] text-slate-600 shadow-none">
-                          {area}
-                        </Badge>
-                      ))}
-                    </div>
+                  <div className="flex items-center justify-between rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-500">
+                    <span className="flex items-center">
+                      <Dot className="-ml-2 mr-0.5 h-4 w-4" />
+                      自动进入学校匹配评估流程
+                    </span>
+                    <span>{wordTotal} words</span>
                   </div>
                 </div>
 
@@ -757,15 +918,6 @@ export function EvaluationWorkspace({
                     title="上传论文文件"
                     description="上传后自动提取文本，并同步到当前项目资料库。"
                     status={paperUploadState}
-                    onDrop={handleDrop}
-                    onSelect={handleSelect}
-                  />
-
-                  <UploadSurface
-                    slot="rubric"
-                    title="上传要求文件"
-                    description="支持 rubric、brief、老师要求、lecture notes 或 module handbook。"
-                    status={rubricUploadState}
                     onDrop={handleDrop}
                     onSelect={handleSelect}
                   />
@@ -810,289 +962,140 @@ export function EvaluationWorkspace({
           </SurfaceCard>
         </div>
 
-        <div className="xl:col-span-5">
-          <div className="sticky top-6 space-y-6">
-            <SurfaceCard>
-              <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white px-6 py-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900">
-                      <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
-                        <BarChart3 className="h-[18px] w-[18px] text-slate-700" />
-                      </div>
-                      评估结果
-                    </div>
-                    <div className="mt-1 text-sm leading-6 text-slate-500">右侧结果区保留动态分数、分项进度和结果切换效果。</div>
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
+          <SurfaceCard>
+            <div className="relative overflow-hidden rounded-[30px] border border-amber-200/70 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#fffbeb_100%)] px-6 py-5">
+              <motion.div
+                className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-amber-200/30 blur-2xl"
+                animate={{ scale: [1, 1.12, 1], opacity: [0.25, 0.45, 0.25] }}
+                transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              />
+              <div className="flex flex-col gap-4">
+                <div className="max-w-md">
+                  <div className="inline-flex items-center rounded-full border border-amber-200 bg-white px-3 py-1 text-[11px] font-medium text-amber-700 shadow-sm">
+                    1v1 Advisor Support
                   </div>
-                  <motion.div
-                    animate={loading ? { scale: [1, 1.06, 1], opacity: [0.7, 1, 0.7] } : { scale: 1, opacity: 1 }}
-                    transition={{ duration: 1, repeat: loading ? Number.POSITIVE_INFINITY : 0 }}
-                  >
-                    <Badge className="rounded-full border border-slate-200 bg-white px-3 text-[11px] text-slate-600 hover:bg-white">
-                      {loading ? "Analyzing" : "Live preview"}
-                    </Badge>
-                  </motion.div>
-                </div>
-              </div>
-
-              <div className="space-y-5 p-6">
-                <motion.div
-                  key={resultsVersion}
-                  initial={{ opacity: 0, y: 14, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.45 }}
-                  className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_100%)] p-5 text-white shadow-[0_12px_30px_rgba(15,23,42,0.16)]"
-                >
-                  <motion.div
-                    className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl"
-                    animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.55, 0.3] }}
-                    transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-                  />
-
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 text-sm text-slate-300">
-                        <BarChart3 className="h-4 w-4" />
-                        Overall evaluation
-                      </div>
-                      <div className="mt-2 flex items-end gap-3">
-                        <div className="text-5xl font-semibold tracking-tight">
-                          <AnimatedNumber value={overallScore} version={resultsVersion} />
-                        </div>
-                        <div className="mb-1 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] text-slate-200">
-                          score / 100
-                        </div>
-                      </div>
-                      <div className="mt-2 text-sm text-slate-300">
-                        {overallScore >= 80 ? "Upper Merit, close to Distinction threshold" : "Solid working draft with clear improvement space"}
-                      </div>
-                    </div>
-
-                    <div className="rounded-[22px] border border-white/10 bg-white/8 px-4 py-3 text-right text-sm">
-                      <div>{schoolProfile.name}</div>
-                      <div className="mt-1 text-slate-300">{studyRoute} pathway</div>
-                    </div>
+                  <div className="mt-3 text-base font-semibold tracking-tight text-slate-900">
+                    想知道更详细的修改方向？添加顾问 1v1 给你进一步分析
                   </div>
-
-                  <div className="mt-5 grid grid-cols-3 gap-3">
-                    {[
-                      { label: "Coverage", value: result ? `${Math.min(98, 82 + result.jsonReport.sourcesUsed.length * 2)}%` : "92%" },
-                      { label: "Confidence", value: result ? "High" : "Preview" },
-                      { label: "Status", value: loading ? "Updating" : result ? "Ready" : "Draft" }
-                    ].map((item) => (
-                      <div key={`${item.label}-${item.value}`} className="rounded-2xl border border-white/10 bg-white/6 px-3 py-3">
-                        <div className="text-[11px] text-slate-300">{item.label}</div>
-                        <div className="mt-1 text-sm font-medium text-white">{item.value}</div>
-                      </div>
-                    ))}
+                  <div className="mt-2 text-sm leading-6 text-slate-600">
+                    除了基础评估结果，还可以进一步针对结构、论证、引用和提分路径给出更具体的修改建议。
                   </div>
-                </motion.div>
-
-                <div className="grid h-12 w-full grid-cols-3 rounded-[18px] border border-slate-200 bg-slate-50 p-1">
-                  <ResultTabButton tab="breakdown" activeTab={activeTab} onClick={setActiveTab}>
-                    Breakdown
-                  </ResultTabButton>
-                  <ResultTabButton tab="priorities" activeTab={activeTab} onClick={setActiveTab}>
-                    Priorities
-                  </ResultTabButton>
-                  <ResultTabButton tab="evidence" activeTab={activeTab} onClick={setActiveTab}>
-                    Evidence
-                  </ResultTabButton>
                 </div>
 
-                {activeTab === "breakdown" ? (
-                  <div className="space-y-3">
-                    {displayedScores.map((item, index) => (
-                      <AnimatedBar
-                        key={`${item.label}-${resultsVersion}`}
-                        label={item.label}
-                        value={item.value}
-                        hint={item.hint}
-                        delay={index * 0.08}
-                        version={resultsVersion}
-                      />
-                    ))}
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+                  <div className="rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+                    更细的逐段修改建议
                   </div>
-                ) : null}
-
-                {activeTab === "priorities" ? (
-                  <div className="space-y-3">
-                    {(result?.jsonReport.priorityImprovements.length
-                      ? result.jsonReport.priorityImprovements.map((item, index) => ({
-                          title: `优先修改项 ${index + 1}`,
-                          detail: item,
-                          level: index < 2 ? "高优先级" : "中优先级"
-                        }))
-                      : previewPriorities
-                    ).map((item, index) => (
-                      <motion.div
-                        key={`${item.title}-${index}`}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.08 }}
-                        whileHover={{ y: -2 }}
-                        className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_2px_10px_rgba(15,23,42,0.03)]"
-                      >
-                        <div className="flex items-start gap-3">
-                          <motion.div
-                            animate={{ scale: [1, 1.06, 1] }}
-                            transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, delay: index * 0.2 }}
-                            className="mt-0.5 rounded-full bg-amber-100 p-2 text-amber-700"
-                          >
-                            <AlertCircle className="h-4 w-4" />
-                          </motion.div>
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <div className="font-medium text-slate-900">{item.title}</div>
-                              <Badge className="rounded-full border border-amber-200 bg-amber-50 text-amber-700 shadow-none">
-                                {item.level}
-                              </Badge>
-                            </div>
-                            <div className="mt-2 text-sm leading-6 text-slate-600">{item.detail}</div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : null}
-
-                {activeTab === "evidence" ? (
-                  <div className="space-y-3">
-                    {(result?.jsonReport.sourcesUsed.length
-                      ? result.jsonReport.sourcesUsed.map((item) => item.filename)
-                      : previewEvidence
-                    ).map((item, index) => (
-                      <motion.div
-                        key={`${item}-${index}`}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.07 }}
-                        whileHover={{ x: 3 }}
-                        className="flex items-center justify-between rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_2px_10px_rgba(15,23,42,0.03)]"
-                      >
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="rounded-2xl bg-slate-100 p-2">
-                            <BookOpen className="h-4 w-4 text-slate-700" />
-                          </div>
-                          <div className="truncate text-sm font-medium text-slate-800">{item}</div>
-                        </div>
-                        <div className="flex items-center gap-1 text-xs font-medium text-slate-400">
-                          Linked
-                          <ChevronRight className="h-3.5 w-3.5" />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : null}
+                  <Button className="h-11 rounded-[16px] bg-[linear-gradient(135deg,#111827_0%,#1f2937_100%)] px-5 text-white shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:opacity-95">
+                    添加顾问 1v1
+                  </Button>
+                </div>
               </div>
-            </SurfaceCard>
+            </div>
+          </SurfaceCard>
 
+          {result ? (
             <SurfaceCard>
-              <div className="relative overflow-hidden rounded-[30px] border border-amber-200/70 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#fffbeb_100%)] px-6 py-5">
-                <motion.div
-                  className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-amber-200/30 blur-2xl"
-                  animate={{ scale: [1, 1.12, 1], opacity: [0.25, 0.45, 0.25] }}
-                  transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              <div className="p-6">
+                <CardHeading
+                  icon={ArrowRight}
+                  title="修改清单与证据"
+                  description="修改动作、引用提醒和学校资料证据保持在同一页里。"
                 />
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="max-w-md">
-                    <div className="inline-flex items-center rounded-full border border-amber-200 bg-white px-3 py-1 text-[11px] font-medium text-amber-700 shadow-sm">
-                      1v1 Advisor Support
+                <div className="space-y-5">
+                  <div className="space-y-3">
+                    {result.jsonReport.revisionChecklist.map((item) => (
+                      <div key={item} className="flex items-start gap-3 rounded-[20px] border border-slate-200 bg-slate-50/75 px-4 py-4 text-sm leading-7 text-slate-600">
+                        <div className="mt-1 h-2.5 w-2.5 rounded-full bg-slate-900" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
+                      <div className="text-sm font-semibold text-slate-900">引用与规范</div>
+                      <ul className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
+                        {result.jsonReport.citationFeedback.map((item) => (
+                          <li key={item}>• {item}</li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="mt-3 text-base font-semibold tracking-tight text-slate-900">
-                      想知道更详细的修改方向？添加顾问 1v1 给你进一步分析
-                    </div>
-                    <div className="mt-2 text-sm leading-6 text-slate-600">
-                      除了基础评估结果，还可以进一步针对结构、论证、引用和提分路径给出更具体的修改建议。
+
+                    <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
+                      <div className="text-sm font-semibold text-slate-900">语言与学术语气</div>
+                      <ul className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
+                        {[...result.jsonReport.grammarStyleNotes, ...result.jsonReport.academicToneNotes].map((item) => (
+                          <li key={item}>• {item}</li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-3">
-                    <div className="rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
-                      更细的逐段修改建议
-                    </div>
-                    <Button className="h-11 rounded-[16px] bg-[linear-gradient(135deg,#111827_0%,#1f2937_100%)] px-5 text-white shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:opacity-95">
-                      添加顾问 1v1
-                    </Button>
-                  </div>
+                  <SourceCitationPanel items={result.jsonReport.sourcesUsed} />
                 </div>
               </div>
             </SurfaceCard>
-
-            {result ? (
-              <>
-                <SurfaceCard>
-                  <div className="p-6">
-                    <CardHeading
-                      icon={BookOpen}
-                      title="评估摘要"
-                      description="把这次最重要的判断压缩成一眼能读懂的摘要。"
-                    />
-                    <div className="space-y-3">
-                      <div className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-600">
-                        {result.jsonReport.overallSummary}
-                      </div>
-                      {result.jsonReport.strengths.slice(0, 2).map((text, index) => (
-                        <motion.div
-                          key={`${text}-${index}`}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.08 + 0.1 }}
-                          whileHover={{ y: -2, scale: 1.01 }}
-                          className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600"
-                        >
-                          {text}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </SurfaceCard>
-
-                <SurfaceCard>
-                  <div className="p-6">
-                    <CardHeading
-                      icon={ArrowRight}
-                      title="修改清单与证据"
-                      description="修改动作、引用提醒和学校资料证据保持在同一页里。"
-                    />
-                    <div className="space-y-5">
-                      <div className="space-y-3">
-                        {result.jsonReport.revisionChecklist.map((item) => (
-                          <div key={item} className="flex items-start gap-3 rounded-[20px] border border-slate-200 bg-slate-50/75 px-4 py-4 text-sm leading-7 text-slate-600">
-                            <div className="mt-1 h-2.5 w-2.5 rounded-full bg-slate-900" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="grid gap-4 lg:grid-cols-2">
-                        <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
-                          <div className="text-sm font-semibold text-slate-900">引用与规范</div>
-                          <ul className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
-                            {result.jsonReport.citationFeedback.map((item) => (
-                              <li key={item}>• {item}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
-                          <div className="text-sm font-semibold text-slate-900">语言与学术语气</div>
-                          <ul className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
-                            {[...result.jsonReport.grammarStyleNotes, ...result.jsonReport.academicToneNotes].map((item) => (
-                              <li key={item}>• {item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-
-                      <SourceCitationPanel items={result.jsonReport.sourcesUsed} />
-                    </div>
-                  </div>
-                </SurfaceCard>
-              </>
-            ) : null}
-          </div>
+          ) : (
+            <SurfaceCard>
+              <div className="p-6">
+                <CardHeading
+                  icon={BookOpen}
+                  title="评估摘要"
+                  description="把最关键信息压缩成一眼能看懂的三条。"
+                />
+                <div className="space-y-3">
+                  {[
+                    "结构已经比较稳定，但批判性分析还需要更直接地回应评分标准。",
+                    "引用要更密集地进入分析句，而不是只出现在段落结尾。",
+                    "结论如果更贴任务 wording，整体表现会更接近 distinction 区间。"
+                  ].map((text, index) => (
+                    <motion.div
+                      key={text}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.08 + 0.1 }}
+                      whileHover={{ y: -2, scale: 1.01 }}
+                      className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600"
+                    >
+                      {text}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </SurfaceCard>
+          )}
         </div>
+
+        {result ? (
+          <SurfaceCard>
+            <div className="p-6">
+              <CardHeading
+                icon={BookOpen}
+                title="评估摘要"
+                description="把这次最重要的判断压缩成一眼能读懂的摘要。"
+              />
+              <div className="space-y-3">
+                <div className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-600">
+                  {result.jsonReport.overallSummary}
+                </div>
+                {result.jsonReport.strengths.slice(0, 2).map((text, index) => (
+                  <motion.div
+                    key={`${text}-${index}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08 + 0.1 }}
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600"
+                  >
+                    {text}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </SurfaceCard>
+        ) : null}
       </div>
     </div>
   );
