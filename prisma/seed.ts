@@ -103,6 +103,49 @@ async function main() {
     });
   }
 
+  const existingSchoolFile = await prisma.schoolKnowledgeFile.findFirst({
+    where: {
+      schoolId: "uea",
+      filename: "uea-business-rubric.md"
+    }
+  });
+
+  const schoolFile =
+    existingSchoolFile ??
+    (await prisma.schoolKnowledgeFile.create({
+      data: {
+        schoolId: "uea",
+        schoolName: "University of East Anglia",
+        filename: "uea-business-rubric.md",
+        mimeType: "text/markdown",
+        storagePath: "local://schools/uea/uea-business-rubric.md",
+        extractedText:
+          "UEA business assignments should demonstrate clear argument structure, engagement with module concepts, evidence-based reasoning, critical analysis, and consistent Harvard referencing.",
+        extractionStatus: "completed",
+        embeddingStatus: "pending"
+      }
+    }));
+
+  const existingSchoolChunk = await prisma.schoolKnowledgeChunk.findFirst({
+    where: {
+      fileId: schoolFile.id,
+      chunkIndex: 0
+    }
+  });
+
+  if (!existingSchoolChunk) {
+    await prisma.schoolKnowledgeChunk.create({
+      data: {
+        fileId: schoolFile.id,
+        schoolId: "uea",
+        content:
+          "UEA business assignments should demonstrate clear argument structure, engagement with module concepts, evidence-based reasoning, critical analysis, and consistent Harvard referencing.",
+        chunkIndex: 0,
+        tokenCount: 28
+      }
+    });
+  }
+
   const existingReport = await prisma.evaluationReport.findFirst({
     where: { projectId: project.id }
   });

@@ -71,9 +71,33 @@ CREATE TABLE "UploadedFile" (
   "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE "SchoolKnowledgeFile" (
+  "id" TEXT PRIMARY KEY,
+  "schoolId" TEXT NOT NULL,
+  "schoolName" TEXT NOT NULL,
+  "filename" TEXT NOT NULL,
+  "mimeType" TEXT NOT NULL,
+  "storagePath" TEXT NOT NULL,
+  "extractedText" TEXT NOT NULL,
+  "extractionStatus" TEXT NOT NULL DEFAULT 'pending',
+  "embeddingStatus" TEXT NOT NULL DEFAULT 'pending',
+  "createdAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE "DocumentChunk" (
   "id" TEXT PRIMARY KEY,
   "fileId" TEXT NOT NULL REFERENCES "UploadedFile"("id") ON DELETE CASCADE,
+  "content" TEXT NOT NULL,
+  "embedding" vector(1536),
+  "chunkIndex" INTEGER NOT NULL,
+  "tokenCount" INTEGER NOT NULL,
+  "pageNumber" INTEGER
+);
+
+CREATE TABLE "SchoolKnowledgeChunk" (
+  "id" TEXT PRIMARY KEY,
+  "fileId" TEXT NOT NULL REFERENCES "SchoolKnowledgeFile"("id") ON DELETE CASCADE,
+  "schoolId" TEXT NOT NULL,
   "content" TEXT NOT NULL,
   "embedding" vector(1536),
   "chunkIndex" INTEGER NOT NULL,
@@ -143,3 +167,8 @@ CREATE TABLE "PromptTemplate" (
   "prompt" TEXT NOT NULL,
   "updatedAt" TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX "SchoolKnowledgeFile_schoolId_idx" ON "SchoolKnowledgeFile"("schoolId");
+CREATE INDEX "SchoolKnowledgeFile_schoolName_idx" ON "SchoolKnowledgeFile"("schoolName");
+CREATE INDEX "SchoolKnowledgeChunk_schoolId_idx" ON "SchoolKnowledgeChunk"("schoolId");
+CREATE INDEX "SchoolKnowledgeChunk_fileId_chunkIndex_idx" ON "SchoolKnowledgeChunk"("fileId", "chunkIndex");

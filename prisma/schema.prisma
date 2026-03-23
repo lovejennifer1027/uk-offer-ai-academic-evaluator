@@ -150,6 +150,23 @@ model UploadedFile {
   chunks           DocumentChunk[]
 }
 
+model SchoolKnowledgeFile {
+  id               String               @id @default(uuid())
+  schoolId         String
+  schoolName       String
+  filename         String
+  mimeType         String
+  storagePath      String
+  extractedText    String
+  extractionStatus ExtractionStatus     @default(pending)
+  embeddingStatus  EmbeddingStatus      @default(pending)
+  createdAt        DateTime             @default(now())
+  chunks           SchoolKnowledgeChunk[]
+
+  @@index([schoolId])
+  @@index([schoolName])
+}
+
 model DocumentChunk {
   id         String   @id @default(uuid())
   fileId      String
@@ -159,6 +176,21 @@ model DocumentChunk {
   tokenCount  Int
   pageNumber  Int?
   file        UploadedFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+}
+
+model SchoolKnowledgeChunk {
+  id         String              @id @default(uuid())
+  fileId     String
+  schoolId   String
+  content    String
+  embedding  Unsupported("vector(1536)")?
+  chunkIndex Int
+  tokenCount Int
+  pageNumber Int?
+  file       SchoolKnowledgeFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([fileId, chunkIndex])
 }
 
 model EvaluationReport {
