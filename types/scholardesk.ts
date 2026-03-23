@@ -83,9 +83,33 @@ export interface UploadedFileRecord {
   createdAt: string;
 }
 
+export interface SchoolKnowledgeFileRecord {
+  id: string;
+  schoolId: string;
+  schoolName: string;
+  filename: string;
+  mimeType: string;
+  storagePath: string;
+  extractedText: string;
+  extractionStatus: ExtractionStatus;
+  embeddingStatus: EmbeddingStatus;
+  createdAt: string;
+}
+
 export interface DocumentChunkRecord {
   id: string;
   fileId: string;
+  content: string;
+  embedding: number[] | null;
+  chunkIndex: number;
+  tokenCount: number;
+  pageNumber?: number | null;
+}
+
+export interface SchoolKnowledgeChunkRecord {
+  id: string;
+  fileId: string;
+  schoolId: string;
   content: string;
   embedding: number[] | null;
   chunkIndex: number;
@@ -197,7 +221,9 @@ export interface LocalStoreShape {
   users: AppUser[];
   projects: ProjectRecord[];
   uploadedFiles: UploadedFileRecord[];
+  schoolKnowledgeFiles: SchoolKnowledgeFileRecord[];
   documentChunks: DocumentChunkRecord[];
+  schoolKnowledgeChunks: SchoolKnowledgeChunkRecord[];
   evaluationReports: EvaluationReportRecord[];
   briefAnalyses: BriefAnalysisRecord[];
   citationJobs: CitationJobRecord[];

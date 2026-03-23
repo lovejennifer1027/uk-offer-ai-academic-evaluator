@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { FAQS, FEATURES, PRICING_TIERS } from "@/config/site";
 import { AdminDataTable } from "@/components/dashboard/admin-data-table";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { getOptionalSessionUser } from "@/lib/session";
 import { getAdminSnapshot } from "@/services/store/local-store";
 
@@ -25,6 +27,11 @@ export default async function AdminPage() {
         <Card className="rounded-[30px]">
           <h1 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950">Admin panel</h1>
           <p className="mt-3 text-sm leading-7 text-slate-600">Users, projects, files, reports, feature flags, prompt templates, and content blocks are surfaced here for role-based review.</p>
+          <div className="mt-5">
+            <Link href="/admin/academic-knowledge">
+              <Button variant="secondary">Open school knowledge backend</Button>
+            </Link>
+          </div>
         </Card>
 
         <div className="grid gap-6">
@@ -42,6 +49,11 @@ export default async function AdminPage() {
             title="Files"
             columns={["Filename", "Type", "Extraction", "Embedding"]}
             rows={snapshot.files.map((file) => [file.filename, file.mimeType, file.extractionStatus, file.embeddingStatus])}
+          />
+          <AdminDataTable
+            title="School knowledge files"
+            columns={["School", "Filename", "Extraction", "Embedding"]}
+            rows={snapshot.schoolKnowledgeFiles.map((file) => [file.schoolName, file.filename, file.extractionStatus, file.embeddingStatus])}
           />
           <AdminDataTable
             title="Reports"

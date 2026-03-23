@@ -2,8 +2,9 @@ import "server-only";
 
 import { randomUUID } from "crypto";
 
+import { resolveAcademicSchoolProfile } from "@/config/academic-schools";
 import { createEmbedding } from "@/lib/openai/client";
-import { getChunksForProject, listFilesByProject } from "@/services/store/local-store";
+import { getChunksForProject, getChunksForSchool, listFilesByProject, listSchoolKnowledgeFiles } from "@/services/store/local-store";
 import type { EvidenceSnippet } from "@/types/scholardesk";
 
 function cosineSimilarity(a: number[], b: number[]) {
@@ -53,6 +54,55 @@ export async function retrieveProjectEvidence(projectId: string, query: string, 
         filename: file?.filename ?? "Project document",
         snippet: chunk.content.slice(0, 280),
         score: embeddingScore + lexicalScore * 0.12
+      };
+    })
+    .sort((left, right) => right.score - left.score)
+    .slice(0, topK);
+
+  return ranked.map(({ id, ...item }) => ({ ...item }));
+}
+
+export async function retrieveEvaluationEvidence(input: {
+  projectId: string;
+  school?: string;
+  query: string;
+  topK?: number;
+}): Promise<EvidenceSnippet[]> {
+  const topK = input.topK ?? 8;
+  const projectChunks = await getChunksForProject(input.projectId);
+  const projectFiles = await listFilesByProject(input.projectId);
+
+  const schoolProfile = input.school ? resolveAcademicSchoolProfile(input.school) : null;
+  const schoolChunks = schoolProfile ? await getChunksForSchool(schoolProfile.id) : [];
+  const schoolFiles = schoolProfile ? await listSchoolKnowledgeFiles(schoolProfile.id) : [];
+
+  const combined = [
+    ...projectChunks.map((chunk) => ({ scope: "project" as const, chunk })),
+    ...schoolChunks.map((chunk) => ({ scope: "school" as const, chunk }))
+  ];
+
+  if (combined.length === 0) {
+    return [];
+  }
+
+  const queryEmbedding = process.env.OPENAI_API_KEY ? await createEmbedding(input.query).catch(() => null) : null;
+
+  const ranked = combined
+    .map(({ scope, chunk }) => {
+      const file =
+        scope === "project"
+          ? projectFiles.find((item) => item.id === chunk.fileId)
+          : schoolFiles.find((item) => item.id === chunk.fileId);
+      const embeddingScore = queryEmbedding && chunk.embedding ? cosineSimilarity(queryEmbedding, chunk.embedding) : 0;
+      const lexicalScore = keywordScore(input.query, chunk.content);
+      const schoolBoost = scope === "school" ? 0.08 : 0;
+
+      return {
+        id: randomUUID(),
+        fileId: chunk.fileId,
+        filename: file?.filename ?? (scope === "school" ? "School knowledge document" : "Project document"),
+        snippet: chunk.content.slice(0, 280),
+        score: embeddingScore + lexicalScore * 0.12 + schoolBoost
       };
     })
     .sort((left, right) => right.score - left.score)

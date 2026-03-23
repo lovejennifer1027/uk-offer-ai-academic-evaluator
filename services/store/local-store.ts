@@ -17,6 +17,8 @@ import type {
   LocalStoreShape,
   ProjectRecord,
   PromptTemplateRecord,
+  SchoolKnowledgeChunkRecord,
+  SchoolKnowledgeFileRecord,
   UploadedFileRecord,
   UsageLogRecord
 } from "@/types/scholardesk";
@@ -79,7 +81,9 @@ function createDefaultStore(): LocalStoreShape {
         createdAt: now()
       }
     ],
+    schoolKnowledgeFiles: [],
     documentChunks: [],
+    schoolKnowledgeChunks: [],
     evaluationReports: [],
     briefAnalyses: [],
     citationJobs: [],
@@ -109,6 +113,27 @@ function createDefaultStore(): LocalStoreShape {
   };
 }
 
+function normaliseStore(store: Partial<LocalStoreShape>): LocalStoreShape {
+  const defaults = createDefaultStore();
+
+  return {
+    users: store.users ?? defaults.users,
+    projects: store.projects ?? defaults.projects,
+    uploadedFiles: store.uploadedFiles ?? defaults.uploadedFiles,
+    schoolKnowledgeFiles: store.schoolKnowledgeFiles ?? [],
+    documentChunks: store.documentChunks ?? defaults.documentChunks,
+    schoolKnowledgeChunks: store.schoolKnowledgeChunks ?? [],
+    evaluationReports: store.evaluationReports ?? defaults.evaluationReports,
+    briefAnalyses: store.briefAnalyses ?? defaults.briefAnalyses,
+    citationJobs: store.citationJobs ?? defaults.citationJobs,
+    chatThreads: store.chatThreads ?? defaults.chatThreads,
+    chatMessages: store.chatMessages ?? defaults.chatMessages,
+    usageLogs: store.usageLogs ?? defaults.usageLogs,
+    adminSettings: store.adminSettings ?? defaults.adminSettings,
+    promptTemplates: store.promptTemplates ?? defaults.promptTemplates
+  };
+}
+
 async function ensureStoreFile() {
   await mkdir(path.dirname(STORE_PATH), { recursive: true });
 
@@ -122,7 +147,8 @@ async function ensureStoreFile() {
 export async function readStore() {
   await ensureStoreFile();
   const content = await readFile(STORE_PATH, "utf8");
-  return JSON.parse(content) as LocalStoreShape;
+  const parsed = JSON.parse(content) as Partial<LocalStoreShape>;
+  return normaliseStore(parsed);
 }
 
 export async function writeStore(store: LocalStoreShape) {
@@ -197,6 +223,16 @@ export async function listFilesByProject(projectId: string) {
   return store.uploadedFiles.filter((file) => file.projectId === projectId);
 }
 
+export async function listSchoolKnowledgeFiles(schoolId?: string) {
+  const store = await readStore();
+
+  if (!schoolId) {
+    return store.schoolKnowledgeFiles;
+  }
+
+  return store.schoolKnowledgeFiles.filter((file) => file.schoolId === schoolId);
+}
+
 export async function createUploadedFile(
   input: Pick<UploadedFileRecord, "projectId" | "filename" | "mimeType" | "storagePath" | "extractedText" | "extractionStatus" | "embeddingStatus">
 ) {
@@ -207,6 +243,23 @@ export async function createUploadedFile(
     createdAt: now()
   };
   store.uploadedFiles.unshift(file);
+  await writeStore(store);
+  return file;
+}
+
+export async function createSchoolKnowledgeFile(
+  input: Pick<
+    SchoolKnowledgeFileRecord,
+    "schoolId" | "schoolName" | "filename" | "mimeType" | "storagePath" | "extractedText" | "extractionStatus" | "embeddingStatus"
+  >
+) {
+  const store = await readStore();
+  const file: SchoolKnowledgeFileRecord = {
+    id: randomUUID(),
+    ...input,
+    createdAt: now()
+  };
+  store.schoolKnowledgeFiles.unshift(file);
   await writeStore(store);
   return file;
 }
@@ -230,9 +283,39 @@ export async function updateUploadedFile(
   return store.uploadedFiles[index];
 }
 
+export async function updateSchoolKnowledgeFile(
+  fileId: string,
+  patch: Partial<
+    Pick<
+      SchoolKnowledgeFileRecord,
+      "extractedText" | "extractionStatus" | "embeddingStatus" | "storagePath" | "mimeType" | "filename" | "schoolName"
+    >
+  >
+) {
+  const store = await readStore();
+  const index = store.schoolKnowledgeFiles.findIndex((file) => file.id === fileId);
+
+  if (index === -1) {
+    return null;
+  }
+
+  store.schoolKnowledgeFiles[index] = {
+    ...store.schoolKnowledgeFiles[index],
+    ...patch
+  };
+  await writeStore(store);
+  return store.schoolKnowledgeFiles[index];
+}
+
 export async function replaceDocumentChunks(fileId: string, chunks: DocumentChunkRecord[]) {
   const store = await readStore();
   store.documentChunks = store.documentChunks.filter((chunk) => chunk.fileId !== fileId).concat(chunks);
+  await writeStore(store);
+}
+
+export async function replaceSchoolKnowledgeChunks(fileId: string, chunks: SchoolKnowledgeChunkRecord[]) {
+  const store = await readStore();
+  store.schoolKnowledgeChunks = store.schoolKnowledgeChunks.filter((chunk) => chunk.fileId !== fileId).concat(chunks);
   await writeStore(store);
 }
 
@@ -240,6 +323,11 @@ export async function getChunksForProject(projectId: string) {
   const store = await readStore();
   const fileIds = new Set(store.uploadedFiles.filter((file) => file.projectId === projectId).map((file) => file.id));
   return store.documentChunks.filter((chunk) => fileIds.has(chunk.fileId));
+}
+
+export async function getChunksForSchool(schoolId: string) {
+  const store = await readStore();
+  return store.schoolKnowledgeChunks.filter((chunk) => chunk.schoolId === schoolId);
 }
 
 export async function createEvaluationReport(
@@ -349,6 +437,7 @@ export async function getAdminSnapshot() {
     users: store.users,
     projects: store.projects,
     files: store.uploadedFiles,
+    schoolKnowledgeFiles: store.schoolKnowledgeFiles,
     reports: store.evaluationReports,
     logs: store.usageLogs,
     settings: store.adminSettings,

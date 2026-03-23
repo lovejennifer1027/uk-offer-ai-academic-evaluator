@@ -2,13 +2,21 @@ import "server-only";
 
 import { randomUUID } from "crypto";
 
+import { resolveAcademicSchoolProfile } from "@/config/academic-schools";
 import { createEmbedding } from "@/lib/openai/client";
 import { cleanText } from "@/lib/utils";
 import { extractTextFromFile } from "@/lib/file-extract";
-import { createUploadedFile, replaceDocumentChunks, updateUploadedFile } from "@/services/store/local-store";
+import {
+  createSchoolKnowledgeFile,
+  createUploadedFile,
+  replaceDocumentChunks,
+  replaceSchoolKnowledgeChunks,
+  updateSchoolKnowledgeFile,
+  updateUploadedFile
+} from "@/services/store/local-store";
 import { splitIntoChunks } from "@/services/rag/chunk";
 import { storeUploadedBuffer } from "@/services/files/storage";
-import type { DocumentChunkRecord } from "@/types/scholardesk";
+import type { DocumentChunkRecord, SchoolKnowledgeChunkRecord } from "@/types/scholardesk";
 
 const allowedExtensions = ["pdf", "docx", "txt", "md"] as const;
 const maxUploadBytes = 12 * 1024 * 1024;
@@ -89,6 +97,56 @@ export async function processUpload(projectId: string, file: File) {
     })) ?? uploadedFile;
 
   return {
+    file: {
+      ...finalFile
+    },
+    chunkCount: enrichedChunks.length
+  };
+}
+
+export async function processSchoolKnowledgeUpload(schoolInput: string, file: File) {
+  validateFile(file);
+  const school = resolveAcademicSchoolProfile(schoolInput);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const storagePath = await storeUploadedBuffer(`${school.id}-${file.name}`, buffer);
+  const extractedText = await extractFileText(file);
+
+  const uploadedFile = await createSchoolKnowledgeFile({
+    schoolId: school.id,
+    schoolName: school.name,
+    filename: file.name,
+    mimeType: normaliseMimeType(file),
+    storagePath,
+    extractedText,
+    extractionStatus: "completed",
+    embeddingStatus: process.env.OPENAI_API_KEY ? "processing" : "pending"
+  });
+
+  const chunks = splitIntoChunks(extractedText, uploadedFile.id);
+  const enrichedChunks: SchoolKnowledgeChunkRecord[] = [];
+
+  for (const chunk of chunks) {
+    const embedding = process.env.OPENAI_API_KEY ? await createEmbedding(chunk.content).catch(() => null) : null;
+    enrichedChunks.push({
+      id: randomUUID(),
+      fileId: chunk.fileId,
+      schoolId: school.id,
+      content: chunk.content,
+      embedding,
+      chunkIndex: chunk.chunkIndex,
+      tokenCount: chunk.tokenCount,
+      pageNumber: chunk.pageNumber
+    });
+  }
+
+  await replaceSchoolKnowledgeChunks(uploadedFile.id, enrichedChunks);
+  const finalFile =
+    (await updateSchoolKnowledgeFile(uploadedFile.id, {
+      embeddingStatus: process.env.OPENAI_API_KEY ? "completed" : "pending"
+    })) ?? uploadedFile;
+
+  return {
+    school,
     file: {
       ...finalFile
     },

@@ -2,6 +2,7 @@ import type { CitationStyle, EvidenceSnippet, ProjectLanguage } from "@/types/sc
 
 export function buildEvaluationPrompt(input: {
   paperText: string;
+  school: string;
   rubricText?: string;
   targetLevel: string;
   citationStyle: CitationStyle;
@@ -16,6 +17,7 @@ Task:
 - do not ghostwrite a full assignment
 - use retrieved evidence only when relevant
 
+Selected school: ${input.school}
 Target level: ${input.targetLevel}
 Citation style: ${input.citationStyle}
 Working language: ${input.language}

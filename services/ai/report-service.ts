@@ -1,25 +1,30 @@
 import "server-only";
 
 import { requestStructuredJson } from "@/lib/openai/client";
-import { retrieveProjectEvidence } from "@/services/rag/retrieval";
+import { retrieveEvaluationEvidence, retrieveProjectEvidence } from "@/services/rag/retrieval";
 import { briefAnalysisJsonSchema, briefAnalysisSchema, chatAnswerJsonSchema, chatAnswerSchema, evaluationReportJsonSchema, evaluationReportSchema } from "@/services/ai/schemas";
 import { buildBriefAnalyzerPrompt, buildChatPrompt, buildEvaluationPrompt } from "@/services/ai/prompts";
 import type { CitationStyle, ProjectLanguage } from "@/types/scholardesk";
 
 export async function generateEvaluationReport(input: {
   projectId: string;
+  school: string;
   paperText: string;
   rubricText?: string;
   targetLevel: string;
   citationStyle: CitationStyle;
   language: ProjectLanguage;
 }) {
-  const evidence = await retrieveProjectEvidence(input.projectId, `${input.paperText}\n${input.rubricText ?? ""}`);
+  const evidence = await retrieveEvaluationEvidence({
+    projectId: input.projectId,
+    school: input.school,
+    query: `${input.paperText}\n${input.rubricText ?? ""}`
+  });
 
   if (!process.env.OPENAI_API_KEY || process.env.ENABLE_DEMO_EVALUATION === "true") {
     const demo = {
       overallSummary:
-        "The draft has a workable structure and a credible academic tone, but the argument needs tighter evidence handling and more explicit evaluation.",
+        `${input.school} 相关资料显示，这份草稿已经具备基本结构和较稳的学术语气，但论证力度、证据解释和 rubric 对齐仍需要进一步强化。`,
       dimensionScores: {
         structure: 74,
         argument: 68,
@@ -78,6 +83,7 @@ export async function generateEvaluationReport(input: {
     schema: evaluationReportJsonSchema,
     input: buildEvaluationPrompt({
       paperText: input.paperText,
+      school: input.school,
       rubricText: input.rubricText,
       targetLevel: input.targetLevel,
       citationStyle: input.citationStyle,

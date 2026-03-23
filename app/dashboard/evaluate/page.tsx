@@ -19,5 +19,13 @@ export default async function DashboardEvaluatePage() {
     );
   }
 
-  return <EvaluationWorkspace projectId={project.id} language={project.language} />;
+  return (
+    <EvaluationWorkspace
+      projectId={project.id}
+      language={project.language}
+      initialSchool={project.school}
+      projectTitle={project.title}
+      moduleCode={project.module}
+    />
+  );
 }
