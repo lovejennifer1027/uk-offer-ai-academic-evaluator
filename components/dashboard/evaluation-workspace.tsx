@@ -740,16 +740,16 @@ export function EvaluationWorkspace({
             </div>
           </SurfaceCard>
 
-        <div className="grid gap-6 xl:grid-cols-2">
-          <SurfaceCard>
-            <div className="p-6">
+        <div className="grid items-stretch gap-6 xl:grid-cols-2">
+          <SurfaceCard className="h-full">
+            <div className="flex h-full min-h-[420px] flex-col p-6">
               <CardHeading
                 icon={School}
                 title="评估设置"
                 description="学校、路径和学历层级会一起决定系统匹配的评估标准。"
               />
-              <div className="space-y-4">
-                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_220px_220px]">
+              <div className="flex flex-1 flex-col justify-between space-y-4">
+                <div className="space-y-4">
                   <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
                     <div className="mb-2 text-sm font-medium text-slate-900">学校</div>
                     <Select value={selectedSchool} onChange={(event) => setSelectedSchool(event.target.value)} className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm">
@@ -799,14 +799,14 @@ export function EvaluationWorkspace({
             </div>
           </SurfaceCard>
 
-            <SurfaceCard>
-              <div className="p-6">
+          <SurfaceCard className="h-full">
+              <div className="flex h-full min-h-[420px] flex-col p-6">
                 <CardHeading
                   icon={ClipboardList}
                   title="学校依据区"
                   description="把 rubric、brief 和课程说明集中在一个更可信的区域里。"
                 />
-                <div className="space-y-4">
+                <div className="flex flex-1 flex-col space-y-4">
                   <div className="rounded-[24px] border border-emerald-200 bg-[linear-gradient(135deg,#ecfdf5_0%,#f6fffb_100%)] p-4">
                     <div className="flex items-start gap-3">
                       <motion.div
@@ -846,8 +846,8 @@ export function EvaluationWorkspace({
                   />
                 </div>
               </div>
-            </SurfaceCard>
-          </div>
+          </SurfaceCard>
+        </div>
 
           <SurfaceCard>
             <div className="p-6">
@@ -928,15 +928,15 @@ export function EvaluationWorkspace({
           </SurfaceCard>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-          <SurfaceCard>
-            <div className="relative overflow-hidden rounded-[30px] border border-amber-200/70 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#fffbeb_100%)] px-6 py-5">
+        <div className="grid items-stretch gap-6 xl:grid-cols-2">
+          <SurfaceCard className="h-full">
+            <div className="relative flex h-full min-h-[320px] flex-col overflow-hidden rounded-[30px] border border-amber-200/70 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#fffbeb_100%)] px-6 py-5">
               <motion.div
                 className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-amber-200/30 blur-2xl"
                 animate={{ scale: [1, 1.12, 1], opacity: [0.25, 0.45, 0.25] }}
                 transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
               />
-              <div className="flex flex-col gap-4">
+              <div className="flex h-full flex-col justify-between gap-4">
                 <div className="max-w-md">
                   <div className="inline-flex items-center rounded-full border border-amber-200 bg-white px-3 py-1 text-[11px] font-medium text-amber-700 shadow-sm">
                     1v1 Advisor Support
@@ -962,14 +962,14 @@ export function EvaluationWorkspace({
           </SurfaceCard>
 
           {result ? (
-            <SurfaceCard>
-              <div className="p-6">
+            <SurfaceCard className="h-full">
+              <div className="flex h-full min-h-[320px] flex-col p-6">
                 <CardHeading
                   icon={ArrowRight}
                   title="修改清单与证据"
                   description="修改动作、引用提醒和学校资料证据保持在同一页里。"
                 />
-                <div className="space-y-5">
+                <div className="flex flex-1 flex-col space-y-5">
                   <div className="space-y-3">
                     {result.jsonReport.revisionChecklist.map((item) => (
                       <div key={item} className="flex items-start gap-3 rounded-[20px] border border-slate-200 bg-slate-50/75 px-4 py-4 text-sm leading-7 text-slate-600">
@@ -1004,14 +1004,14 @@ export function EvaluationWorkspace({
               </div>
             </SurfaceCard>
           ) : (
-            <SurfaceCard>
-              <div className="p-6">
+            <SurfaceCard className="h-full">
+              <div className="flex h-full min-h-[320px] flex-col p-6">
                 <CardHeading
                   icon={BookOpen}
                   title="评估摘要"
                   description="把最关键信息压缩成一眼能看懂的三条。"
                 />
-                <div className="space-y-3">
+                <div className="flex flex-1 flex-col justify-between space-y-3">
                   {[
                     "结构已经比较稳定，但批判性分析还需要更直接地回应评分标准。",
                     "引用要更密集地进入分析句，而不是只出现在段落结尾。",
