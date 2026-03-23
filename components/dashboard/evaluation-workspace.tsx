@@ -740,98 +740,64 @@ export function EvaluationWorkspace({
             </div>
           </SurfaceCard>
 
-          <div className="grid gap-6 xl:grid-cols-2">
-            <SurfaceCard>
-              <div className="p-6">
-                <CardHeading
-                  icon={School}
-                  title="评估设置"
-                  description="学校、路径和学历层级会一起决定系统匹配的评估标准。"
-                />
-                <div className="space-y-4">
-                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_220px_220px]">
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">学校</div>
-                      <Select value={selectedSchool} onChange={(event) => setSelectedSchool(event.target.value)} className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm">
-                        {schoolOptions.map((school) => (
-                          <option key={school.id} value={school.name}>
-                            {school.name}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">路径</div>
-                      <Select
-                        value={studyRoute}
-                        onChange={(event) => setStudyRoute(event.target.value as (typeof studyRouteOptions)[number])}
-                        className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
-                      >
-                        {studyRouteOptions.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
-
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">学历层级</div>
-                      <Select
-                        value={targetLevel}
-                        onChange={(event) => setTargetLevel(event.target.value)}
-                        className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
-                      >
-                        {["Bachelor", "Master", "PhD"].map((level) => (
-                          <option key={level} value={level}>
-                            {level}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
+        <div className="grid gap-6 xl:grid-cols-2">
+          <SurfaceCard>
+            <div className="p-6">
+              <CardHeading
+                icon={School}
+                title="评估设置"
+                description="学校、路径和学历层级会一起决定系统匹配的评估标准。"
+              />
+              <div className="space-y-4">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.25fr)_220px_220px]">
+                  <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                    <div className="mb-2 text-sm font-medium text-slate-900">学校</div>
+                    <Select value={selectedSchool} onChange={(event) => setSelectedSchool(event.target.value)} className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm">
+                      {schoolOptions.map((school) => (
+                        <option key={school.id} value={school.name}>
+                          {school.name}
+                        </option>
+                      ))}
+                    </Select>
                   </div>
 
-                  <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_260px_220px]">
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">当前项目</div>
-                      <div className="flex h-11 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm">
-                        {projectTitle}
-                      </div>
-                    </div>
-
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">模块代码</div>
-                      <div className="flex h-11 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-900 shadow-sm">
-                        {moduleCode}
-                      </div>
-                    </div>
-
-                    <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-                      <div className="mb-2 text-sm font-medium text-slate-900">引用格式</div>
-                      <Select
-                        value={citationStyle}
-                        onChange={(event) => setCitationStyle(event.target.value as CitationStyle)}
-                        className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
-                      >
-                        {citationStyleOptions.map((style) => (
-                          <option key={style} value={style}>
-                            {style}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>
+                  <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                    <div className="mb-2 text-sm font-medium text-slate-900">路径</div>
+                    <Select
+                      value={studyRoute}
+                      onChange={(event) => setStudyRoute(event.target.value as (typeof studyRouteOptions)[number])}
+                      className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
+                    >
+                      {studyRouteOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </Select>
                   </div>
 
-                  <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
-                    当前评估语言：
-                    <span className="ml-2 font-medium text-slate-900">
-                      {language === "zh" ? "中文" : language === "bilingual" ? "中英双语" : "English"}
-                    </span>
+                  <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                    <div className="mb-2 text-sm font-medium text-slate-900">学历层级</div>
+                    <Select
+                      value={targetLevel}
+                      onChange={(event) => setTargetLevel(event.target.value)}
+                      className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
+                    >
+                      {["Bachelor", "Master", "PhD"].map((level) => (
+                        <option key={level} value={level}>
+                          {level}
+                        </option>
+                      ))}
+                    </Select>
                   </div>
                 </div>
+
+                <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
+                  当前系统会默认沿用项目的评估语言与引用规则进行分析，不再在这里重复显示额外参数。
+                </div>
               </div>
-            </SurfaceCard>
+            </div>
+          </SurfaceCard>
 
             <SurfaceCard>
               <div className="p-6">
