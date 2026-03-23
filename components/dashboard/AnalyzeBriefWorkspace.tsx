@@ -340,13 +340,13 @@ export default function AnalyzeBriefWorkspace() {
                 />
 
                 <div className="mt-6 space-y-4">
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4">
                     <SettingField label="学校" value={selectedSchool} onChange={setSelectedSchool} options={schools} />
                     <SettingField label="项目" value={selectedProject} onChange={setSelectedProject} options={projects} />
                     <SettingField label="层级" value={selectedLevel} onChange={setSelectedLevel} options={levels} />
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-3">
+                  <div className="grid gap-4">
                     {requirementCards.map((item, index) => (
                       <MatchCard
                         key={item.title}
@@ -470,7 +470,7 @@ export default function AnalyzeBriefWorkspace() {
                 transition={{ duration: 2.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
               />
 
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between xl:flex-col xl:items-start">
+              <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                   <motion.div
                     animate={{ rotate: [0, 10, 0] }}
@@ -487,7 +487,10 @@ export default function AnalyzeBriefWorkspace() {
                     </div>
                   </div>
                 </div>
-                <Button type="button" className="rounded-2xl bg-slate-900 px-5 py-3 text-white hover:bg-slate-800">
+                <Button
+                  type="button"
+                  className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-white hover:bg-slate-800 sm:w-auto"
+                >
                   生成学校专属示例
                   <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Button>
