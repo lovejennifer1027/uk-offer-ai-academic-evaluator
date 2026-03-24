@@ -90,24 +90,36 @@ const exportVariants: Array<{
   title: string;
   description: string;
   label: string;
+  tier: string;
+  price: string;
+  highlights: string[];
 }> = [
   {
     key: "full",
-    title: "完整评估报告",
-    description: "适合正式留档，包含总分、分项评分、优点、修改项和证据来源。",
-    label: "Full PDF"
+    title: "标准评分报告",
+    description: "适合先快速看总分、分项评分和主要修改方向，适合作为第一次评估输出。",
+    label: "Standard PDF",
+    tier: "Basic",
+    price: "GBP 9",
+    highlights: ["总分与分项评分", "核心优点总结", "基础修改建议"]
   },
   {
     key: "student",
-    title: "学生简版报告",
-    description: "更适合直接给学生查看，重点看结果结论、优点和下一步修改动作。",
-    label: "Student PDF"
+    title: "学生提分报告",
+    description: "更适合直接发给学生查看，重点看结论、修改动作和提分优先级。",
+    label: "Student PDF",
+    tier: "Pro",
+    price: "GBP 19",
+    highlights: ["学生可读版本", "提分动作清单", "语言与引用提醒"]
   },
   {
     key: "advisor",
     title: "顾问复核报告",
-    description: "给顾问或老师二次查看时使用，突出证据、引用、语气和风险提醒。",
-    label: "Advisor PDF"
+    description: "给顾问或老师二次复核时使用，突出证据、语气、引用和风险提醒。",
+    label: "Advisor PDF",
+    tier: "Premium",
+    price: "GBP 39",
+    highlights: ["顾问复核视角", "证据来源明细", "高优先级风险提示"]
   }
 ];
 
@@ -1240,7 +1252,7 @@ export function EvaluationWorkspace({
               <CardHeading
                 icon={Download}
                 title="报告导出"
-                description="评估完成后可以导出三种不同的 PDF 版本，分别适合留档、发给学生和顾问复核。"
+                description="评估完成后可以选择 3 种不同层级的报告输出，对应不同内容深度和价格。"
               />
               <div className="mt-6 grid gap-4 xl:grid-cols-3">
                 {exportVariants.map((variant, index) => (
@@ -1261,13 +1273,23 @@ export function EvaluationWorkspace({
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-slate-700">
                         <Download className="h-5 w-5" />
                       </div>
-                      <Badge className="rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] text-slate-600 shadow-none">
-                        {variant.label}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-2">
+                        <Badge className="rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] text-slate-600 shadow-none">
+                          {variant.label}
+                        </Badge>
+                        <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-semibold text-emerald-700">
+                          {variant.price}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="mt-5">
-                      <div className="text-base font-semibold text-slate-950">{variant.title}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-base font-semibold text-slate-950">{variant.title}</div>
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                          {variant.tier}
+                        </span>
+                      </div>
                       <div className="mt-2 text-sm leading-6 text-slate-600">{variant.description}</div>
                     </div>
 
@@ -1283,13 +1305,24 @@ export function EvaluationWorkspace({
                       ))}
                     </div>
 
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {variant.highlights.map((item) => (
+                        <div
+                          key={item}
+                          className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] text-slate-600"
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+
                     <Button
                       type="button"
                       disabled={!result}
                       onClick={() => exportReport(variant.key)}
                       className="mt-6 w-full rounded-[18px] bg-[linear-gradient(135deg,#111827_0%,#1f2937_100%)] py-3 text-white shadow-[0_14px_30px_rgba(15,23,42,0.12)] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      导出 PDF
+                      导出 {variant.title}
                     </Button>
                   </motion.div>
                 ))}
