@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   ChevronRight,
   ClipboardList,
+  Download,
   Dot,
   FileText,
   School,
@@ -67,6 +68,7 @@ const previewEvidence = [
 
 type UploadSlot = "paper" | "rubric";
 type ResultTab = "breakdown" | "priorities" | "evidence";
+type ExportVariant = "full" | "student" | "advisor";
 
 interface UploadState {
   status: "idle" | "uploading" | "done" | "error";
@@ -81,6 +83,284 @@ interface UploadPayload {
     extractedText?: string;
     filename?: string;
   };
+}
+
+const exportVariants: Array<{
+  key: ExportVariant;
+  title: string;
+  description: string;
+  label: string;
+}> = [
+  {
+    key: "full",
+    title: "完整评估报告",
+    description: "适合正式留档，包含总分、分项评分、优点、修改项和证据来源。",
+    label: "Full PDF"
+  },
+  {
+    key: "student",
+    title: "学生简版报告",
+    description: "更适合直接给学生查看，重点看结果结论、优点和下一步修改动作。",
+    label: "Student PDF"
+  },
+  {
+    key: "advisor",
+    title: "顾问复核报告",
+    description: "给顾问或老师二次查看时使用，突出证据、引用、语气和风险提醒。",
+    label: "Advisor PDF"
+  }
+];
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderList(items: string[]) {
+  return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
+function buildPrintableReportHtml({
+  variant,
+  projectTitle,
+  moduleCode,
+  schoolName,
+  studyRoute,
+  overallScore,
+  report,
+  scores
+}: {
+  variant: ExportVariant;
+  projectTitle: string;
+  moduleCode: string;
+  schoolName: string;
+  studyRoute: string;
+  overallScore: number;
+  report: EvaluationReportJson;
+  scores: Array<{ label: string; hint: string; value: number }>;
+}) {
+  const scoreRows = scores
+    .map(
+      (item) => `
+        <tr>
+          <td>${escapeHtml(item.label)}</td>
+          <td>${escapeHtml(item.hint)}</td>
+          <td>${item.value}/100</td>
+        </tr>
+      `
+    )
+    .join("");
+
+  const evidenceRows = report.sourcesUsed.length
+    ? report.sourcesUsed
+        .map(
+          (item) => `
+            <div class="evidence-item">
+              <div class="evidence-file">${escapeHtml(item.filename)}</div>
+              <div class="evidence-snippet">${escapeHtml(item.snippet)}</div>
+            </div>
+          `
+        )
+        .join("")
+    : "<div class='muted'>No evidence snippets were attached to this run.</div>";
+
+  const sharedHeader = `
+    <div class="hero">
+      <div>
+        <div class="eyebrow">ScholarDesk AI evaluation export</div>
+        <h1>${variant === "full" ? "Academic Evaluation Report" : variant === "student" ? "Student Revision Report" : "Advisor Review Report"}</h1>
+        <p>${escapeHtml(projectTitle)} · ${escapeHtml(moduleCode)} · ${escapeHtml(schoolName)} · ${escapeHtml(studyRoute)}</p>
+      </div>
+      <div class="score-card">
+        <div class="score-label">Overall score</div>
+        <div class="score-value">${overallScore}</div>
+        <div class="score-caption">/ 100</div>
+      </div>
+    </div>
+  `;
+
+  const fullContent = `
+    <section>
+      <h2>Overall summary</h2>
+      <p>${escapeHtml(report.overallSummary)}</p>
+    </section>
+    <section>
+      <h2>Dimension scores</h2>
+      <table>
+        <thead>
+          <tr><th>Dimension</th><th>Focus</th><th>Score</th></tr>
+        </thead>
+        <tbody>${scoreRows}</tbody>
+      </table>
+    </section>
+    <section class="grid grid-2">
+      <div class="panel">
+        <h3>Strengths</h3>
+        <ul>${renderList(report.strengths)}</ul>
+      </div>
+      <div class="panel">
+        <h3>Priority improvements</h3>
+        <ul>${renderList(report.priorityImprovements)}</ul>
+      </div>
+    </section>
+    <section>
+      <h2>Revision checklist</h2>
+      <ul>${renderList(report.revisionChecklist)}</ul>
+    </section>
+    <section>
+      <h2>Evidence used</h2>
+      ${evidenceRows}
+    </section>
+  `;
+
+  const studentContent = `
+    <section>
+      <h2>What this result means</h2>
+      <p>${escapeHtml(report.overallSummary)}</p>
+    </section>
+    <section class="grid grid-2">
+      <div class="panel">
+        <h3>What is already working</h3>
+        <ul>${renderList(report.strengths)}</ul>
+      </div>
+      <div class="panel">
+        <h3>What to fix first</h3>
+        <ul>${renderList(report.priorityImprovements.slice(0, 3))}</ul>
+      </div>
+    </section>
+    <section>
+      <h2>Action checklist</h2>
+      <ul>${renderList(report.revisionChecklist)}</ul>
+    </section>
+    <section class="grid grid-2">
+      <div class="panel">
+        <h3>Citation notes</h3>
+        <ul>${renderList(report.citationFeedback)}</ul>
+      </div>
+      <div class="panel">
+        <h3>Language notes</h3>
+        <ul>${renderList(report.grammarStyleNotes)}</ul>
+      </div>
+    </section>
+  `;
+
+  const advisorContent = `
+    <section>
+      <h2>Review summary</h2>
+      <p>${escapeHtml(report.overallSummary)}</p>
+    </section>
+    <section>
+      <h2>Dimension scores</h2>
+      <table>
+        <thead>
+          <tr><th>Dimension</th><th>Focus</th><th>Score</th></tr>
+        </thead>
+        <tbody>${scoreRows}</tbody>
+      </table>
+    </section>
+    <section class="grid grid-2">
+      <div class="panel">
+        <h3>Citation feedback</h3>
+        <ul>${renderList(report.citationFeedback)}</ul>
+      </div>
+      <div class="panel">
+        <h3>Academic tone notes</h3>
+        <ul>${renderList(report.academicToneNotes)}</ul>
+      </div>
+    </section>
+    <section class="grid grid-2">
+      <div class="panel">
+        <h3>Priority improvements</h3>
+        <ul>${renderList(report.priorityImprovements)}</ul>
+      </div>
+      <div class="panel">
+        <h3>Optional examples</h3>
+        <ul>${renderList(report.optionalExamples.length ? report.optionalExamples : ["No optional examples were generated in this run."])}</ul>
+      </div>
+    </section>
+    <section>
+      <h2>Evidence used</h2>
+      ${evidenceRows}
+    </section>
+  `;
+
+  const body = variant === "full" ? fullContent : variant === "student" ? studentContent : advisorContent;
+
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>${escapeHtml(projectTitle)} - ${variant} export</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #0f172a;
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+          }
+          main { max-width: 960px; margin: 0 auto; padding: 40px 28px 56px; }
+          .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 28px;
+            border-radius: 28px;
+            color: white;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          }
+          .eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.7; }
+          h1 { margin: 10px 0 8px; font-size: 34px; line-height: 1.1; }
+          h2 { margin: 0 0 14px; font-size: 22px; }
+          h3 { margin: 0 0 12px; font-size: 16px; }
+          p, li, td, th, div { line-height: 1.65; }
+          section { margin-top: 24px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 24px; background: white; }
+          .panel { padding: 20px; border-radius: 22px; border: 1px solid #e2e8f0; background: #f8fafc; }
+          .grid { display: grid; gap: 16px; }
+          .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .score-card {
+            min-width: 180px;
+            padding: 20px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            text-align: right;
+          }
+          .score-label { font-size: 12px; opacity: 0.72; text-transform: uppercase; letter-spacing: 0.08em; }
+          .score-value { margin-top: 8px; font-size: 54px; font-weight: 700; line-height: 1; }
+          .score-caption { margin-top: 6px; font-size: 13px; opacity: 0.75; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+          th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; }
+          ul { margin: 0; padding-left: 20px; }
+          .evidence-item { padding: 14px 0; border-bottom: 1px solid #e2e8f0; }
+          .evidence-file { font-weight: 600; margin-bottom: 6px; }
+          .evidence-snippet, .muted { color: #64748b; }
+          @media print {
+            body { background: white; }
+            main { max-width: none; padding: 0; }
+            section, .hero, .panel, .score-card { box-shadow: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <main>
+          ${sharedHeader}
+          ${body}
+        </main>
+        <script>
+          window.addEventListener("load", () => {
+            setTimeout(() => window.print(), 200);
+          });
+        </script>
+      </body>
+    </html>
+  `;
 }
 
 function FloatingOrb({
@@ -407,6 +687,34 @@ export function EvaluationWorkspace({
       { label: "Referencing", hint: "引用格式与一致性", value: 67 }
     ];
   }, [result]);
+
+  const exportReport = (variant: ExportVariant) => {
+    if (!result || typeof window === "undefined") {
+      return;
+    }
+
+    const popup = window.open("", "_blank", "noopener,noreferrer,width=1100,height=900");
+
+    if (!popup) {
+      setErrorMessage("浏览器阻止了弹窗，请允许弹窗后再导出 PDF。");
+      return;
+    }
+
+    const html = buildPrintableReportHtml({
+      variant,
+      projectTitle,
+      moduleCode,
+      schoolName: schoolProfile.name,
+      studyRoute,
+      overallScore: result.overallScore,
+      report: result.jsonReport,
+      scores: displayedScores
+    });
+
+    popup.document.open();
+    popup.document.write(html);
+    popup.document.close();
+  };
 
   async function uploadAndExtract(slot: UploadSlot, file: File | null) {
     if (!file) {
@@ -924,6 +1232,68 @@ export function EvaluationWorkspace({
                   ))}
                 </div>
               ) : null}
+            </div>
+          </SurfaceCard>
+
+          <SurfaceCard>
+            <div className="p-6">
+              <CardHeading
+                icon={Download}
+                title="报告导出"
+                description="评估完成后可以导出三种不同的 PDF 版本，分别适合留档、发给学生和顾问复核。"
+              />
+              <div className="mt-6 grid gap-4 xl:grid-cols-3">
+                {exportVariants.map((variant, index) => (
+                  <motion.div
+                    key={variant.key}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08 }}
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    className="group relative overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm"
+                  >
+                    <motion.div
+                      className="absolute inset-x-5 top-0 h-1 rounded-full bg-gradient-to-r from-sky-400 via-violet-500 to-emerald-400"
+                      animate={{ opacity: [0.55, 1, 0.55] }}
+                      transition={{ duration: 2.2, repeat: Number.POSITIVE_INFINITY, delay: index * 0.18, ease: "easeInOut" }}
+                    />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-slate-700">
+                        <Download className="h-5 w-5" />
+                      </div>
+                      <Badge className="rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] text-slate-600 shadow-none">
+                        {variant.label}
+                      </Badge>
+                    </div>
+
+                    <div className="mt-5">
+                      <div className="text-base font-semibold text-slate-950">{variant.title}</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-600">{variant.description}</div>
+                    </div>
+
+                    <div className="mt-5 grid gap-3">
+                      {[
+                        `学校：${schoolProfile.name}`,
+                        `路径：${studyRoute}`,
+                        result ? `总分：${result.overallScore}/100` : "请先完成一次评估"
+                      ].map((item) => (
+                        <div key={item} className="rounded-[18px] border border-slate-200 bg-slate-50/70 px-3 py-2 text-xs text-slate-600">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      type="button"
+                      disabled={!result}
+                      onClick={() => exportReport(variant.key)}
+                      className="mt-6 w-full rounded-[18px] bg-[linear-gradient(135deg,#111827_0%,#1f2937_100%)] py-3 text-white shadow-[0_14px_30px_rgba(15,23,42,0.12)] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      导出 PDF
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </SurfaceCard>
         </div>
