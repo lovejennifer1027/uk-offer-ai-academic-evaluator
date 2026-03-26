@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { CreateProjectForm } from "@/components/dashboard/create-project-form";
 import { ProjectCard } from "@/components/dashboard/project-card";
 import { requireSessionUser } from "@/lib/session";
 import { listProjectsByUser } from "@/services/store/local-store";
@@ -11,6 +12,8 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-6">
+      <CreateProjectForm />
+
       <Card className="rounded-[30px]">
         <h2 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">Projects</h2>
         <p className="mt-3 text-sm leading-7 text-slate-600">Filter-ready project listing with school, module, assignment type, status, and language metadata.</p>
