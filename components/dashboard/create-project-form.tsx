@@ -33,20 +33,17 @@ export function CreateProjectForm() {
   const [language, setLanguage] = useState<(typeof languages)[number]["value"]>("en");
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!title.trim() || !school.trim() || !programme.trim() || !module.trim()) {
       setErrorMessage("请先完整填写项目标题、学校、programme 和 module。");
-      setSuccessMessage(null);
       return;
     }
 
     setSubmitting(true);
     setErrorMessage(null);
-    setSuccessMessage(null);
 
     try {
       const response = await fetch("/api/projects", {
@@ -70,17 +67,10 @@ export function CreateProjectForm() {
         throw new Error(payload?.error ?? "创建项目失败，请稍后重试。");
       }
 
-      setTitle("");
-      setSchool("");
-      setProgramme("");
-      setModule("");
-      setAssignmentType("essay");
-      setLanguage("en");
-      setSuccessMessage("项目已创建，列表已刷新。");
+      router.push(`/dashboard/projects/${payload.project.id}`);
       router.refresh();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "创建项目失败，请稍后重试。");
-      setSuccessMessage(null);
     } finally {
       setSubmitting(false);
     }
@@ -142,12 +132,6 @@ export function CreateProjectForm() {
         {errorMessage ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {errorMessage}
-          </div>
-        ) : null}
-
-        {successMessage ? (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {successMessage}
           </div>
         ) : null}
 
