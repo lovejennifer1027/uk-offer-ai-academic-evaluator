@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { Card } from "@/components/ui/card";
+import { ProjectCreatedBanner } from "@/components/dashboard/project-created-banner";
 import { ProjectWorkspaceTabs } from "@/components/dashboard/project-workspace-tabs";
 import { requireSessionUser } from "@/lib/session";
 import { getProjectByIdForUser, listFilesByProject, listMessagesByThread, listReportsByProject, listThreadsByProject } from "@/services/store/local-store";
@@ -28,14 +28,7 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="space-y-6">
-      {resolvedSearchParams?.created === "1" ? (
-        <Card className="rounded-[30px] border border-emerald-200 bg-emerald-50">
-          <h2 className="text-xl font-semibold text-emerald-950">Project created successfully</h2>
-          <p className="mt-3 text-sm leading-7 text-emerald-800">
-            Your new project is ready. You can now upload files, run evaluations, and continue in this workspace.
-          </p>
-        </Card>
-      ) : null}
+      {resolvedSearchParams?.created === "1" ? <ProjectCreatedBanner /> : null}
 
       <ProjectWorkspaceTabs project={project} files={files} reports={reports} messages={messages} />
     </div>
