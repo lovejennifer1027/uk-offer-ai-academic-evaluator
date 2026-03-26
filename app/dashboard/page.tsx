@@ -6,6 +6,29 @@ import { getLocale } from "@/lib/i18n";
 import { requireSessionUser } from "@/lib/session";
 import { listFilesByProject, listProjectsByUser, listReportsByProject } from "@/services/store/local-store";
 
+function getEvaluationBand(score: number) {
+  if (score >= 70) {
+    return "Distinction";
+  }
+
+  if (score >= 60) {
+    return "Merit";
+  }
+
+  if (score >= 50) {
+    return "Pass";
+  }
+
+  return "Below pass";
+}
+
+function formatTimestamp(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
 export default async function DashboardOverviewPage() {
   const locale = await getLocale();
   const user = await requireSessionUser();
@@ -25,6 +48,7 @@ export default async function DashboardOverviewPage() {
   const fileCount = fileCounts.reduce((total, count) => total + count, 0);
   const reportCount = reportCounts.reduce((total, count) => total + count, 0);
   const currentProject = projects[0] ?? null;
+  const currentProjectLatestReport = currentProject ? latestReportsByProject.get(currentProject.id) ?? null : null;
 
   return (
     <div className="space-y-6">
@@ -76,6 +100,49 @@ export default async function DashboardOverviewPage() {
                   {currentProject.school} · {currentProject.programme} · {currentProject.module}
                 </p>
               </div>
+
+              {currentProjectLatestReport ? (
+                <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_14px_36px_rgba(15,23,42,0.06)]">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="text-sm font-medium text-slate-500">{locale === "en" ? "Latest evaluation" : "最近评估"}</div>
+                    <div className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{currentProjectLatestReport.overallScore}/100</div>
+                  </div>
+                  <div className="mt-2 text-sm font-medium text-slate-800">
+                    {getEvaluationBand(currentProjectLatestReport.overallScore)}
+                  </div>
+                  <div className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{currentProjectLatestReport.jsonReport.overallSummary}</div>
+                  <div className="mt-3 text-xs text-slate-500">
+                    {locale === "en" ? "Updated" : "更新于"} {formatTimestamp(currentProjectLatestReport.createdAt)}
+                  </div>
+                  <div className="mt-4 grid gap-3">
+                    <Link
+                      href={`/dashboard/projects/${currentProject.id}/print`}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+                    >
+                      {locale === "en" ? "View full evaluation result" : "查看完整评估结果"}
+                    </Link>
+                    <Link
+                      href={`/dashboard/evaluate?project=${currentProject.id}`}
+                      className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                    >
+                      {locale === "en" ? "Re-run evaluation for current project" : "重新运行当前项目评估"}
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50/70 p-5 text-sm text-slate-600">
+                  <div className="font-medium text-slate-900">{locale === "en" ? "No evaluation yet" : "还没有评估结果"}</div>
+                  <p className="mt-2 leading-6">
+                    {locale === "en" ? "Run your first evaluation to generate a score summary and revision guidance." : "先运行一次评估，生成分数摘要和修改建议。"}
+                  </p>
+                  <Link
+                    href={`/dashboard/evaluate?project=${currentProject.id}`}
+                    className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                  >
+                    {locale === "en" ? "Run evaluation for current project" : "运行当前项目评估"}
+                  </Link>
+                </div>
+              )}
 
               <div className="grid gap-3">
                 <Link
