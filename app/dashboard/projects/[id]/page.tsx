@@ -5,6 +5,7 @@ import { ProjectCreatedBanner } from "@/components/dashboard/project-created-ban
 import { ProjectWorkspaceTabs } from "@/components/dashboard/project-workspace-tabs";
 import { Card } from "@/components/ui/card";
 import { requireSessionUser } from "@/lib/session";
+import type { UploadedFileRecord } from "@/types/scholardesk";
 import {
   getProjectByIdForUser,
   listBriefAnalysesByProject,
@@ -37,6 +38,20 @@ function formatTimestamp(value: string) {
   }).format(new Date(value));
 }
 
+function classifyFile(file: UploadedFileRecord) {
+  const haystack = `${file.filename} ${file.mimeType}`.toLowerCase();
+
+  if (/(brief|rubric|criteria|marking|notes|note|handbook|guidance|feedback|lecture)/.test(haystack)) {
+    return "brief";
+  }
+
+  if (/(essay|paper|draft|report|dissertation|reflection|proposal)/.test(haystack)) {
+    return "essay";
+  }
+
+  return "other";
+}
+
 export default async function ProjectDetailPage({
   params,
   searchParams
@@ -60,10 +75,118 @@ export default async function ProjectDetailPage({
   const messages = threads[0] ? await listMessagesByThread(threads[0].id) : [];
   const latestReport = reports[0] ?? null;
   const latestBriefAnalysis = briefAnalyses[0] ?? null;
+  const essayFiles = files.filter((file) => classifyFile(file) === "essay");
+  const briefFiles = files.filter((file) => classifyFile(file) === "brief");
+  const filePreview = files.slice(0, 3);
+  const projectActionLinkClassName =
+    "inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]";
+  const secondaryActionLinkClassName =
+    "inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300";
 
   return (
     <div className="space-y-6">
       {resolvedSearchParams?.created === "1" ? <ProjectCreatedBanner /> : null}
+
+      <Card className="rounded-[30px]">
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="text-sm font-medium text-slate-500">Project dashboard</div>
+              <h2 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-slate-950">{project.title}</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                This dashboard keeps the current project’s materials, brief analysis, evaluation result, and next actions in one place so the student can move through the workflow without losing project context.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">{project.school}</span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">{project.programme}</span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-600">{project.module}</span>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-5">
+              <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Uploaded materials overview</div>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                  <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Essay / paper</div>
+                  <div className="mt-2 text-base font-semibold text-slate-950">{essayFiles.length > 0 ? "Uploaded" : "Not uploaded yet"}</div>
+                </div>
+                <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                  <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Brief / rubric / notes</div>
+                  <div className="mt-2 text-base font-semibold text-slate-950">{briefFiles.length > 0 ? "Uploaded" : "Not uploaded yet"}</div>
+                </div>
+              </div>
+              <div className="mt-4 rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Material count</div>
+                <div className="mt-2 text-base font-semibold text-slate-950">{files.length} file{files.length === 1 ? "" : "s"}</div>
+                <div className="mt-3 text-sm leading-6 text-slate-600">
+                  {filePreview.length > 0 ? filePreview.map((file) => file.filename).join(" · ") : "No project materials uploaded yet."}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-5">
+              <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Latest brief analysis</div>
+              <div className="mt-4 rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                <div className="text-base font-semibold text-slate-950">
+                  {latestBriefAnalysis ? "Generated" : "Not generated yet"}
+                </div>
+                <div className="mt-2 text-sm leading-6 text-slate-600">
+                  {latestBriefAnalysis
+                    ? `Assignment type: ${latestBriefAnalysis.jsonAnalysis.assignmentType}. Marking priorities: ${latestBriefAnalysis.jsonAnalysis.markingPriorities.slice(0, 2).join(" · ")}`
+                    : "Run Analyze Brief to save structure guidance, key deliverables, and likely pitfalls into this project."}
+                </div>
+                <div className="mt-3 text-xs text-slate-500">
+                  {latestBriefAnalysis ? `Updated ${formatTimestamp(latestBriefAnalysis.createdAt)}` : "No saved brief analysis yet."}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-5">
+              <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Latest evaluation</div>
+              <div className="mt-4 rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="text-base font-semibold text-slate-950">
+                      {latestReport ? `${latestReport.overallScore}/100` : "No evaluation yet"}
+                    </div>
+                    <div className="mt-1 text-sm font-medium text-slate-700">
+                      {latestReport ? getEvaluationBand(latestReport.overallScore) : "Run evaluation to generate score and summary."}
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {latestReport ? `Updated ${formatTimestamp(latestReport.createdAt)}` : ""}
+                  </div>
+                </div>
+                <div className="mt-3 text-sm leading-6 text-slate-600">
+                  {latestReport ? latestReport.jsonReport.overallSummary : "No saved evaluation summary yet."}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-5">
+              <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Next actions</div>
+              <div className="mt-4 grid gap-3">
+                <Link href={`/dashboard/upload?project=${project.id}`} className={projectActionLinkClassName}>
+                  Upload materials
+                </Link>
+                <Link href={`/dashboard/analyze-brief?project=${project.id}`} className={secondaryActionLinkClassName}>
+                  Analyze brief
+                </Link>
+                <Link href={`/dashboard/evaluate?project=${project.id}`} className={secondaryActionLinkClassName}>
+                  Run evaluation
+                </Link>
+                {latestReport ? (
+                  <Link href={`/dashboard/projects/${project.id}/print`} className={secondaryActionLinkClassName}>
+                    View latest evaluation
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <Card className="rounded-[30px]">
         {latestReport ? (
@@ -99,13 +222,13 @@ export default async function ProjectDetailPage({
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/dashboard/projects/${project.id}/print`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                className={projectActionLinkClassName}
               >
                 View full evaluation result
               </Link>
               <Link
                 href={`/dashboard/evaluate?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+                className={secondaryActionLinkClassName}
               >
                 Re-run evaluation
               </Link>
@@ -121,7 +244,7 @@ export default async function ProjectDetailPage({
             <div>
               <Link
                 href={`/dashboard/evaluate?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                className={projectActionLinkClassName}
               >
                 Run first evaluation
               </Link>
@@ -172,13 +295,13 @@ export default async function ProjectDetailPage({
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/dashboard/analyze-brief?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                className={projectActionLinkClassName}
               >
                 Open Analyze Brief workspace
               </Link>
               <Link
                 href={`/dashboard/analyze-brief?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+                className={secondaryActionLinkClassName}
               >
                 Re-run brief analysis
               </Link>
@@ -194,7 +317,7 @@ export default async function ProjectDetailPage({
             <div>
               <Link
                 href={`/dashboard/analyze-brief?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                className={projectActionLinkClassName}
               >
                 Run first brief analysis
               </Link>
