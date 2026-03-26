@@ -67,7 +67,7 @@ export function CreateProjectForm() {
         throw new Error(payload?.error ?? "创建项目失败，请稍后重试。");
       }
 
-      router.push(`/dashboard/projects/${payload.project.id}`);
+      router.push(`/dashboard/projects/${payload.project.id}?created=1`);
       router.refresh();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "创建项目失败，请稍后重试。");
