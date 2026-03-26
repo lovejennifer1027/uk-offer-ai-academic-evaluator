@@ -62,6 +62,7 @@ export interface ProjectRecord {
   userId: string;
   title: string;
   school: string;
+  programme: string;
   module: string;
   assignmentType: AssignmentType;
   language: ProjectLanguage;

@@ -59,6 +59,7 @@ function createDefaultStore(): LocalStoreShape {
         userId: demoUserId,
         title: "International Business Strategy Essay",
         school: "Demo University",
+        programme: "International Business Strategy",
         module: "BUS702",
         assignmentType: "essay",
         language: "en",
@@ -115,10 +116,14 @@ function createDefaultStore(): LocalStoreShape {
 
 function normaliseStore(store: Partial<LocalStoreShape>): LocalStoreShape {
   const defaults = createDefaultStore();
+  const projects = (store.projects ?? defaults.projects).map((project) => ({
+    ...project,
+    programme: project.programme?.trim() || project.module || project.title
+  }));
 
   return {
     users: store.users ?? defaults.users,
-    projects: store.projects ?? defaults.projects,
+    projects,
     uploadedFiles: store.uploadedFiles ?? defaults.uploadedFiles,
     schoolKnowledgeFiles: store.schoolKnowledgeFiles ?? [],
     documentChunks: store.documentChunks ?? defaults.documentChunks,
@@ -204,7 +209,7 @@ export async function getProjectByIdForUser(projectId: string, userId: string) {
 }
 
 export async function createProject(
-  input: Pick<ProjectRecord, "userId" | "title" | "school" | "module" | "assignmentType" | "language" | "status" | "tags">
+  input: Pick<ProjectRecord, "userId" | "title" | "school" | "programme" | "module" | "assignmentType" | "language" | "status" | "tags">
 ) {
   const store = await readStore();
   const project: ProjectRecord = {

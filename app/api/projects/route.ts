@@ -8,6 +8,7 @@ import { createProject, listProjectsByUser } from "@/services/store/local-store"
 const createProjectSchema = z.object({
   title: z.string().min(2),
   school: z.string().min(2),
+  programme: z.string().trim().min(2).optional(),
   module: z.string().min(1),
   assignmentType: z.enum(["essay", "report", "dissertation", "reflection", "proposal", "presentation"]),
   language: z.enum(["en", "zh", "bilingual"])
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
       userId: user.id,
       title: payload.title,
       school: payload.school,
+      programme: payload.programme?.trim() || payload.module || payload.title,
       module: payload.module,
       assignmentType: payload.assignmentType,
       language: payload.language,

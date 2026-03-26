@@ -899,7 +899,7 @@ export function EvaluationWorkspace({
                 </div>
 
                 <div className="mt-4 space-y-3">
-                  <GuideStep number="1" text="先选择学校并确认 programme 上下文，让系统匹配对应的评分标准。" delay={0.05} />
+                  <GuideStep number="1" text="先选择学校并确认 programme，让系统匹配对应的评分标准。" delay={0.05} />
                   <GuideStep number="2" text="粘贴论文正文，或者直接上传论文文件。" delay={0.12} />
                   <GuideStep number="3" text="上传 rubric、brief 或老师要求，作为评估依据。" delay={0.19} />
                   <GuideStep number="4" text="在右侧查看评分结果、重点问题和依据来源。" delay={0.26} />
@@ -938,7 +938,7 @@ export function EvaluationWorkspace({
                       className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
                     />
                     <div className="mt-2 text-xs leading-5 text-slate-500">
-                      V1 暂时把 programme 作为当前项目 / module 上下文字段使用，不改数据库结构。
+                      Programme 现在会作为当前项目字段保存，并在评估时与学校、路径和层级一起进入分析上下文。
                     </div>
                   </div>
 
@@ -974,7 +974,7 @@ export function EvaluationWorkspace({
                 </div>
 
                 <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
-                  当前系统会沿用项目的评估语言与引用规则进行分析；programme 在 V1 中先作为当前项目 / module 的轻量映射字段使用。
+                  当前系统会沿用项目的评估语言与引用规则进行分析；programme 会作为当前项目字段参与后续评估与结果生成。
                 </div>
               </div>
             </div>

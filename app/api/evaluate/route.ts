@@ -125,7 +125,7 @@ async function handleDashboardJson(request: Request) {
   const result = await generateEvaluationReport({
     projectId: project.id,
     school: payload.school,
-    programme: payload.programme?.trim() || project.module || project.title,
+    programme: payload.programme?.trim() || project.programme || project.module || project.title,
     studyRoute: payload.studyRoute,
     paperText: payload.paperText,
     rubricText: payload.rubricText,
