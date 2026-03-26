@@ -366,6 +366,11 @@ export async function createBriefAnalysis(input: Pick<BriefAnalysisRecord, "proj
   return analysis;
 }
 
+export async function listBriefAnalysesByProject(projectId: string) {
+  const store = await readStore();
+  return store.briefAnalyses.filter((analysis) => analysis.projectId === projectId);
+}
+
 export async function createCitationJob(input: Pick<CitationJobRecord, "projectId" | "style" | "inputText" | "outputText">) {
   const store = await readStore();
   const job: CitationJobRecord = {

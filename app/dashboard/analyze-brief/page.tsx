@@ -3,7 +3,7 @@ import Link from "next/link";
 import AnalyzeBriefWorkspace from "@/components/dashboard/AnalyzeBriefWorkspace";
 import { Card } from "@/components/ui/card";
 import { requireSessionUser } from "@/lib/session";
-import { getProjectByIdForUser } from "@/services/store/local-store";
+import { getProjectByIdForUser, listBriefAnalysesByProject } from "@/services/store/local-store";
 
 export default async function AnalyzeBriefPage({
   searchParams
@@ -53,6 +53,8 @@ export default async function AnalyzeBriefPage({
     );
   }
 
+  const latestBriefAnalysis = (await listBriefAnalysesByProject(project.id))[0] ?? null;
+
   return (
     <div className="space-y-6">
       <Card className="rounded-[30px]">
@@ -72,7 +74,13 @@ export default async function AnalyzeBriefPage({
         </div>
       </Card>
 
-      <AnalyzeBriefWorkspace initialSchool={project.school} />
+      <AnalyzeBriefWorkspace
+        projectId={project.id}
+        language={project.language}
+        initialSchool={project.school}
+        initialAnalysis={latestBriefAnalysis?.jsonAnalysis ?? null}
+        initialAnalysisCreatedAt={latestBriefAnalysis?.createdAt ?? null}
+      />
     </div>
   );
 }

@@ -5,7 +5,14 @@ import { ProjectCreatedBanner } from "@/components/dashboard/project-created-ban
 import { ProjectWorkspaceTabs } from "@/components/dashboard/project-workspace-tabs";
 import { Card } from "@/components/ui/card";
 import { requireSessionUser } from "@/lib/session";
-import { getProjectByIdForUser, listFilesByProject, listMessagesByThread, listReportsByProject, listThreadsByProject } from "@/services/store/local-store";
+import {
+  getProjectByIdForUser,
+  listBriefAnalysesByProject,
+  listFilesByProject,
+  listMessagesByThread,
+  listReportsByProject,
+  listThreadsByProject
+} from "@/services/store/local-store";
 
 function getEvaluationBand(score: number) {
   if (score >= 70) {
@@ -48,9 +55,11 @@ export default async function ProjectDetailPage({
 
   const files = await listFilesByProject(project.id);
   const reports = await listReportsByProject(project.id);
+  const briefAnalyses = await listBriefAnalysesByProject(project.id);
   const threads = await listThreadsByProject(project.id);
   const messages = threads[0] ? await listMessagesByThread(threads[0].id) : [];
   const latestReport = reports[0] ?? null;
+  const latestBriefAnalysis = briefAnalyses[0] ?? null;
 
   return (
     <div className="space-y-6">
@@ -115,6 +124,79 @@ export default async function ProjectDetailPage({
                 className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
               >
                 Run first evaluation
+              </Link>
+            </div>
+          </div>
+        )}
+      </Card>
+
+      <Card className="rounded-[30px]">
+        {latestBriefAnalysis ? (
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="text-sm font-medium text-slate-500">Latest brief analysis summary</div>
+                <h2 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-slate-950">{latestBriefAnalysis.jsonAnalysis.assignmentType}</h2>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+                  Marking priorities: {latestBriefAnalysis.jsonAnalysis.markingPriorities.slice(0, 3).join(" · ")}
+                </p>
+              </div>
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-4 text-right">
+                <div className="text-xs font-medium uppercase tracking-[0.18em] text-slate-500">Updated</div>
+                <div className="mt-2 text-base font-semibold text-slate-950">{formatTimestamp(latestBriefAnalysis.createdAt)}</div>
+                <div className="mt-2 text-sm text-slate-600">{project.school} · {project.programme}</div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Structure</div>
+                <div className="mt-2 text-sm leading-6 text-slate-950">
+                  {latestBriefAnalysis.jsonAnalysis.expectedStructure.slice(0, 3).join(" · ")}
+                </div>
+              </div>
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Key deliverables</div>
+                <div className="mt-2 text-sm leading-6 text-slate-950">
+                  {latestBriefAnalysis.jsonAnalysis.keyDeliverables.slice(0, 2).join(" · ")}
+                </div>
+              </div>
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500">Likely pitfalls</div>
+                <div className="mt-2 text-sm leading-6 text-slate-950">
+                  {latestBriefAnalysis.jsonAnalysis.likelyPitfalls.slice(0, 2).join(" · ")}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`/dashboard/analyze-brief?project=${project.id}`}
+                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+              >
+                Open Analyze Brief workspace
+              </Link>
+              <Link
+                href={`/dashboard/analyze-brief?project=${project.id}`}
+                className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+              >
+                Re-run brief analysis
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="text-sm font-medium text-slate-500">Latest brief analysis summary</div>
+            <h2 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">No brief analysis result yet</h2>
+            <p className="text-sm leading-7 text-slate-600">
+              This project does not have a saved brief analysis yet. Run Analyze Brief from this project workspace to save assignment type, structure guidance, and key marking priorities.
+            </p>
+            <div>
+              <Link
+                href={`/dashboard/analyze-brief?project=${project.id}`}
+                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+              >
+                Run first brief analysis
               </Link>
             </div>
           </div>

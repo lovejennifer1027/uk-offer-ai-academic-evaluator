@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { BriefAnalysisJson, ProjectLanguage } from "@/types/scholardesk";
 import { cn, wordCount } from "@/lib/utils";
 
 const schools = [
@@ -42,6 +43,10 @@ const requirementCards = [
 ] as const;
 
 type ScoreBand = "50+" | "60+" | "70+";
+type SavedBriefAnalysis = BriefAnalysisJson & {
+  id?: string;
+  createdAt?: string;
+};
 
 function FloatingOrb({
   className = "",
@@ -252,10 +257,25 @@ function buildExamples({
   };
 }
 
+function formatTimestamp(value: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
 export default function AnalyzeBriefWorkspace({
-  initialSchool = "Bangor University"
+  projectId,
+  language,
+  initialSchool = "Bangor University",
+  initialAnalysis,
+  initialAnalysisCreatedAt
 }: {
+  projectId: string;
+  language: ProjectLanguage;
   initialSchool?: string;
+  initialAnalysis?: BriefAnalysisJson | null;
+  initialAnalysisCreatedAt?: string | null;
 }) {
   const [selectedSchool, setSelectedSchool] = useState(initialSchool);
   const [selectedProject, setSelectedProject] = useState("3+1");
@@ -267,6 +287,19 @@ export default function AnalyzeBriefWorkspace({
     "Discuss the factors influencing student purchasing intention. Demonstrate application of theory, use academic sources, and maintain critical analysis throughout."
   );
   const [activeBand, setActiveBand] = useState<ScoreBand>("70+");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [savedMessage, setSavedMessage] = useState<string | null>(
+    initialAnalysisCreatedAt ? `Latest brief analysis saved ${formatTimestamp(initialAnalysisCreatedAt)}.` : null
+  );
+  const [savedAnalysis, setSavedAnalysis] = useState<SavedBriefAnalysis | null>(
+    initialAnalysis
+      ? {
+          ...initialAnalysis,
+          createdAt: initialAnalysisCreatedAt ?? undefined
+        }
+      : null
+  );
 
   const promptWordCount = useMemo(() => wordCount(assignmentPrompt), [assignmentPrompt]);
   const examples = useMemo(
@@ -279,6 +312,44 @@ export default function AnalyzeBriefWorkspace({
       }),
     [assignmentPrompt, selectedLevel, selectedProject, selectedSchool]
   );
+
+  async function handleGenerate() {
+    if (assignmentPrompt.trim().length < 10) {
+      setErrorMessage("Please add a fuller assignment prompt before running Brief analysis.");
+      setSavedMessage(null);
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    setSavedMessage(null);
+
+    try {
+      const response = await fetch("/api/analyze-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          assignmentPrompt,
+          rubricText,
+          language
+        })
+      });
+
+      const payload = (await response.json().catch(() => null)) as (SavedBriefAnalysis & { error?: string }) | null;
+
+      if (!response.ok || !payload) {
+        throw new Error(payload?.error ?? "Brief analysis failed.");
+      }
+
+      setSavedAnalysis(payload);
+      setSavedMessage(`Latest brief analysis saved ${payload.createdAt ? formatTimestamp(payload.createdAt) : "successfully"}.`);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Brief analysis failed.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden rounded-[40px] bg-slate-50 p-1 text-slate-900">
@@ -484,12 +555,51 @@ export default function AnalyzeBriefWorkspace({
                 </div>
                 <Button
                   type="button"
+                  onClick={handleGenerate}
+                  disabled={loading}
                   className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-white hover:bg-slate-800 sm:w-auto"
                 >
-                  生成学校专属示例
+                  {loading ? "保存分析中..." : "保存当前项目 Brief 分析"}
                   <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
+
+              {errorMessage ? (
+                <div className="mt-4 rounded-[22px] border border-red-200 bg-red-50 px-4 py-4 text-sm leading-6 text-red-700">
+                  {errorMessage}
+                </div>
+              ) : null}
+
+              {savedAnalysis ? (
+                <div className="mt-4 rounded-[24px] border border-slate-200 bg-slate-50 px-5 py-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-sm font-medium text-slate-500">Latest saved brief analysis</div>
+                      <div className="mt-1 text-lg font-semibold text-slate-950">{savedAnalysis.assignmentType}</div>
+                    </div>
+                    {savedAnalysis.createdAt ? (
+                      <Badge className="rounded-full border border-slate-200 bg-white text-[11px] text-slate-600 shadow-none">
+                        Saved {formatTimestamp(savedAnalysis.createdAt)}
+                      </Badge>
+                    ) : null}
+                  </div>
+                  {savedMessage ? <div className="mt-3 text-sm leading-6 text-slate-600">{savedMessage}</div> : null}
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                      <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Marking priorities</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-700">
+                        {savedAnalysis.markingPriorities.slice(0, 3).join(" · ")}
+                      </div>
+                    </div>
+                    <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4">
+                      <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Recommended outline</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-700">
+                        {savedAnalysis.recommendedOutline.slice(0, 3).join(" · ")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="mt-6 rounded-[24px] border border-slate-200 bg-slate-100/80 p-1">
                 <div className="grid grid-cols-3 gap-1">
