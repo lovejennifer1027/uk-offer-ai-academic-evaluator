@@ -5,7 +5,6 @@ import { ProjectCreatedBanner } from "@/components/dashboard/project-created-ban
 import { ProjectWorkspaceTabs } from "@/components/dashboard/project-workspace-tabs";
 import { Card } from "@/components/ui/card";
 import { requireSessionUser } from "@/lib/session";
-import type { UploadedFileRecord } from "@/types/scholardesk";
 import {
   getProjectByIdForUser,
   listBriefAnalysesByProject,
@@ -38,20 +37,6 @@ function formatTimestamp(value: string) {
   }).format(new Date(value));
 }
 
-function classifyFile(file: UploadedFileRecord) {
-  const haystack = `${file.filename} ${file.mimeType}`.toLowerCase();
-
-  if (/(brief|rubric|criteria|marking|notes|note|handbook|guidance|feedback|lecture)/.test(haystack)) {
-    return "brief";
-  }
-
-  if (/(essay|paper|draft|report|dissertation|reflection|proposal)/.test(haystack)) {
-    return "essay";
-  }
-
-  return "other";
-}
-
 export default async function ProjectDetailPage({
   params,
   searchParams
@@ -75,8 +60,9 @@ export default async function ProjectDetailPage({
   const messages = threads[0] ? await listMessagesByThread(threads[0].id) : [];
   const latestReport = reports[0] ?? null;
   const latestBriefAnalysis = briefAnalyses[0] ?? null;
-  const essayFiles = files.filter((file) => classifyFile(file) === "essay");
-  const briefFiles = files.filter((file) => classifyFile(file) === "brief");
+  const essayFiles = files.filter((file) => file.category === "essay");
+  const briefFiles = files.filter((file) => file.category === "brief");
+  const noteFiles = files.filter((file) => file.category === "notes");
   const filePreview = files.slice(0, 3);
   const projectActionLinkClassName =
     "inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]";
@@ -114,7 +100,9 @@ export default async function ProjectDetailPage({
                 </div>
                 <div className="rounded-[20px] border border-slate-200 bg-white px-4 py-4">
                   <div className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">Brief / rubric / notes</div>
-                  <div className="mt-2 text-base font-semibold text-slate-950">{briefFiles.length > 0 ? "Uploaded" : "Not uploaded yet"}</div>
+                  <div className="mt-2 text-base font-semibold text-slate-950">
+                    {briefFiles.length + noteFiles.length > 0 ? "Uploaded" : "Not uploaded yet"}
+                  </div>
                 </div>
               </div>
               <div className="mt-4 rounded-[20px] border border-slate-200 bg-white px-4 py-4">
@@ -178,7 +166,7 @@ export default async function ProjectDetailPage({
                   Run evaluation
                 </Link>
                 {latestReport ? (
-                  <Link href={`/dashboard/projects/${project.id}/print`} className={secondaryActionLinkClassName}>
+                  <Link href={`/dashboard/projects/${project.id}/evaluations/${latestReport.id}`} className={secondaryActionLinkClassName}>
                     View latest evaluation
                   </Link>
                 ) : null}
@@ -187,6 +175,68 @@ export default async function ProjectDetailPage({
           </div>
         </div>
       </Card>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <Card className="rounded-[30px]">
+          <h2 className="text-xl font-semibold text-slate-950">Brief analysis history</h2>
+          <div className="mt-5 space-y-4">
+            {briefAnalyses.length === 0 ? (
+              <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-600">
+                No saved brief analyses yet.
+              </div>
+            ) : (
+              briefAnalyses.slice(0, 5).map((analysis) => (
+                <div key={analysis.id} className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-base font-semibold text-slate-950">{analysis.jsonAnalysis.assignmentType}</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-600">
+                        {analysis.jsonAnalysis.markingPriorities.slice(0, 2).join(" · ")}
+                      </div>
+                    </div>
+                    <div className="text-xs text-slate-500">{formatTimestamp(analysis.createdAt)}</div>
+                  </div>
+                  <div className="mt-4">
+                    <Link href={`/dashboard/projects/${project.id}/briefs/${analysis.id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                      View full brief analysis
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+
+        <Card className="rounded-[30px]">
+          <h2 className="text-xl font-semibold text-slate-950">Evaluation history</h2>
+          <div className="mt-5 space-y-4">
+            {reports.length === 0 ? (
+              <div className="rounded-[22px] border border-dashed border-slate-200 bg-slate-50/70 px-4 py-4 text-sm text-slate-600">
+                No saved evaluations yet.
+              </div>
+            ) : (
+              reports.slice(0, 5).map((report) => (
+                <div key={report.id} className="rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-base font-semibold text-slate-950">
+                        {report.overallScore}/100 · {getEvaluationBand(report.overallScore)}
+                      </div>
+                      <div className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{report.jsonReport.overallSummary}</div>
+                    </div>
+                    <div className="text-xs text-slate-500">{formatTimestamp(report.createdAt)}</div>
+                  </div>
+                  <div className="mt-4">
+                    <Link href={`/dashboard/projects/${project.id}/evaluations/${report.id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                      Open saved evaluation
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+      </div>
 
       <Card className="rounded-[30px]">
         {latestReport ? (
@@ -221,7 +271,7 @@ export default async function ProjectDetailPage({
 
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/dashboard/projects/${project.id}/print`}
+                href={`/dashboard/projects/${project.id}/evaluations/${latestReport.id}`}
                 className={projectActionLinkClassName}
               >
                 View full evaluation result
@@ -294,10 +344,10 @@ export default async function ProjectDetailPage({
 
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/dashboard/analyze-brief?project=${project.id}`}
+                href={`/dashboard/projects/${project.id}/briefs/${latestBriefAnalysis.id}`}
                 className={projectActionLinkClassName}
               >
-                Open Analyze Brief workspace
+                View full brief analysis
               </Link>
               <Link
                 href={`/dashboard/analyze-brief?project=${project.id}`}

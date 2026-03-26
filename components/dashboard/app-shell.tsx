@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { BarChart3, BookOpen, FileSearch, FolderKanban, LayoutDashboard, Search, Shield, UploadCloud } from "lucide-react";
 
 import { LogoutButton } from "@/components/auth/logout-button";
+import { CurrentProjectSwitcher } from "@/components/dashboard/current-project-switcher";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,13 @@ const sidebarItems = [
   { href: "/dashboard/appeal", label: { en: "Appeal Organizer", zh: "申诉整理" }, icon: Shield }
 ];
 
-const projectScopedRoutes = new Set(["/dashboard/upload", "/dashboard/evaluate", "/dashboard/analyze-brief"]);
+const projectScopedRoutes = new Set([
+  "/dashboard/upload",
+  "/dashboard/evaluate",
+  "/dashboard/analyze-brief",
+  "/dashboard/knowledge",
+  "/dashboard/citations"
+]);
 
 function resolveCurrentProjectId(pathname: string, searchParams: URLSearchParams) {
   const queryProjectId = searchParams.get("project")?.trim();
@@ -45,16 +52,20 @@ export function AppShell({
   locale,
   title,
   userName,
+  projects,
+  currentProjectId: initialCurrentProjectId,
   children
 }: {
   locale: Locale;
   title: string;
   userName: string;
+  projects: { id: string; title: string }[];
+  currentProjectId: string | null;
   children: ReactNode;
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentProjectId = resolveCurrentProjectId(pathname, searchParams);
+  const currentProjectId = resolveCurrentProjectId(pathname, searchParams) ?? initialCurrentProjectId;
 
   return (
     <div className="min-h-screen px-3 pb-3 pt-3 md:px-5">
@@ -82,6 +93,7 @@ export function AppShell({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
+                  <CurrentProjectSwitcher locale={locale} currentProjectId={currentProjectId} projects={projects} />
                   <LanguageSwitcher locale={locale} />
                   <div className="hidden rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm text-slate-600 md:block">
                     {userName}

@@ -29,6 +29,24 @@ function now() {
   return new Date().toISOString();
 }
 
+function inferUploadedFileCategory(file: Pick<UploadedFileRecord, "filename" | "mimeType">): UploadedFileRecord["category"] {
+  const haystack = `${file.filename} ${file.mimeType}`.toLowerCase();
+
+  if (/(brief|rubric|criteria|marking|guidance|feedback|assignment)/.test(haystack)) {
+    return "brief";
+  }
+
+  if (/(note|notes|lecture|seminar|slide|slides)/.test(haystack)) {
+    return "notes";
+  }
+
+  if (/(essay|paper|draft|report|reflection|proposal|dissertation)/.test(haystack)) {
+    return "essay";
+  }
+
+  return "other";
+}
+
 function createDefaultStore(): LocalStoreShape {
   const demoUserId = randomUUID();
   const demoProjectId = randomUUID();
@@ -73,6 +91,7 @@ function createDefaultStore(): LocalStoreShape {
       {
         id: randomUUID(),
         projectId: demoProjectId,
+        category: "brief",
         filename: "sample-brief.md",
         mimeType: "text/markdown",
         storagePath: "local://demo/sample-brief.md",
@@ -124,7 +143,10 @@ function normaliseStore(store: Partial<LocalStoreShape>): LocalStoreShape {
   return {
     users: store.users ?? defaults.users,
     projects,
-    uploadedFiles: store.uploadedFiles ?? defaults.uploadedFiles,
+    uploadedFiles: (store.uploadedFiles ?? defaults.uploadedFiles).map((file) => ({
+      ...file,
+      category: file.category ?? inferUploadedFileCategory(file)
+    })),
     schoolKnowledgeFiles: store.schoolKnowledgeFiles ?? [],
     documentChunks: store.documentChunks ?? defaults.documentChunks,
     schoolKnowledgeChunks: store.schoolKnowledgeChunks ?? [],
@@ -239,7 +261,10 @@ export async function listSchoolKnowledgeFiles(schoolId?: string) {
 }
 
 export async function createUploadedFile(
-  input: Pick<UploadedFileRecord, "projectId" | "filename" | "mimeType" | "storagePath" | "extractedText" | "extractionStatus" | "embeddingStatus">
+  input: Pick<
+    UploadedFileRecord,
+    "projectId" | "category" | "filename" | "mimeType" | "storagePath" | "extractedText" | "extractionStatus" | "embeddingStatus"
+  >
 ) {
   const store = await readStore();
   const file: UploadedFileRecord = {
@@ -271,7 +296,9 @@ export async function createSchoolKnowledgeFile(
 
 export async function updateUploadedFile(
   fileId: string,
-  patch: Partial<Pick<UploadedFileRecord, "extractedText" | "extractionStatus" | "embeddingStatus" | "storagePath" | "mimeType" | "filename">>
+  patch: Partial<
+    Pick<UploadedFileRecord, "category" | "extractedText" | "extractionStatus" | "embeddingStatus" | "storagePath" | "mimeType" | "filename">
+  >
 ) {
   const store = await readStore();
   const index = store.uploadedFiles.findIndex((file) => file.id === fileId);

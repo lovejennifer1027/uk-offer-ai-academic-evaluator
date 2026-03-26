@@ -3,13 +3,22 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileTable } from "@/components/dashboard/file-table";
+import { resolveCurrentProject } from "@/lib/current-project";
 import { requireSessionUser } from "@/lib/session";
-import { listFilesByProject, listProjectsByUser, listSchoolKnowledgeFiles } from "@/services/store/local-store";
+import { getProjectByIdForUser, listFilesByProject, listProjectsByUser, listSchoolKnowledgeFiles } from "@/services/store/local-store";
 
-export default async function KnowledgePage() {
+export default async function KnowledgePage({
+  searchParams
+}: {
+  searchParams?: Promise<{ project?: string }>;
+}) {
   const user = await requireSessionUser();
   const projects = await listProjectsByUser(user.id);
-  const project = projects[0];
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const requestedProjectId = resolvedSearchParams?.project?.trim();
+  const project = requestedProjectId
+    ? await getProjectByIdForUser(requestedProjectId, user.id)
+    : await resolveCurrentProject(projects);
   const files = project ? await listFilesByProject(project.id) : [];
   const schoolKnowledgeFiles = project ? await listSchoolKnowledgeFiles(resolveAcademicSchoolProfile(project.school).id) : [];
 

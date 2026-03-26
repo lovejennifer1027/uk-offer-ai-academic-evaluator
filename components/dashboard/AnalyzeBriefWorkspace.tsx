@@ -598,6 +598,16 @@ export default function AnalyzeBriefWorkspace({
                       </div>
                     </div>
                   </div>
+                  {savedAnalysis.id ? (
+                    <div className="mt-4">
+                      <a
+                        href={`/dashboard/projects/${projectId}/briefs/${savedAnalysis.id}`}
+                        className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-[0_10px_24px_rgba(15,23,42,0.06)] transition hover:-translate-y-0.5 hover:border-slate-300"
+                      >
+                        View full brief analysis
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
 

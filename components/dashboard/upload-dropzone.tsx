@@ -5,10 +5,13 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Select } from "@/components/ui/select";
+import type { ProjectFileCategory } from "@/types/scholardesk";
 
 export function UploadDropzone({ projectId }: { projectId: string }) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState<ProjectFileCategory>("other");
 
   async function handleChange(file: File | null) {
     if (!file) return;
@@ -19,6 +22,7 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
     try {
       const formData = new FormData();
       formData.append("projectId", projectId);
+      formData.append("category", category);
       formData.append("file", file);
 
       const response = await fetch("/api/upload", {
@@ -49,6 +53,15 @@ export function UploadDropzone({ projectId }: { projectId: string }) {
         <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">
           Supported file types: pdf, docx, txt, md. Files are extracted, chunked, and prepared for retrieval-assisted AI workflows.
         </p>
+        <div className="mt-5 w-full max-w-sm">
+          <label className="mb-2 block text-sm font-medium text-slate-700">Material type</label>
+          <Select value={category} onChange={(event) => setCategory(event.target.value as ProjectFileCategory)}>
+            <option value="essay">Essay / paper</option>
+            <option value="brief">Brief / rubric</option>
+            <option value="notes">Notes / lecture materials</option>
+            <option value="other">Other</option>
+          </Select>
+        </div>
         <label className="mt-6">
           <input type="file" className="hidden" onChange={(event) => handleChange(event.target.files?.[0] ?? null)} />
           <Button disabled={loading}>{loading ? "Uploading..." : "Choose file"}</Button>

@@ -63,6 +63,14 @@ async function extractFileText(file: File) {
 }
 
 export async function processUpload(projectId: string, file: File) {
+  return processCategorizedUpload(projectId, "other", file);
+}
+
+export async function processCategorizedUpload(
+  projectId: string,
+  category: "essay" | "brief" | "notes" | "other",
+  file: File
+) {
   validateFile(file);
   const buffer = Buffer.from(await file.arrayBuffer());
   const storagePath = await storeUploadedBuffer(file.name, buffer);
@@ -70,6 +78,7 @@ export async function processUpload(projectId: string, file: File) {
 
   const uploadedFile = await createUploadedFile({
     projectId,
+    category,
     filename: file.name,
     mimeType: normaliseMimeType(file),
     storagePath,

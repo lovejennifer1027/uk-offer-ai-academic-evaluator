@@ -18,6 +18,7 @@ export function FileTable({ files }: { files: UploadedFileRecord[] }) {
       <table className="w-full text-left">
         <thead className="bg-slate-50 text-sm text-slate-500">
           <tr>
+            <th className="px-5 py-4 font-medium">Type</th>
             <th className="px-5 py-4 font-medium">File</th>
             <th className="px-5 py-4 font-medium">Extraction</th>
             <th className="px-5 py-4 font-medium">Embedding</th>
@@ -27,6 +28,7 @@ export function FileTable({ files }: { files: UploadedFileRecord[] }) {
         <tbody>
           {files.map((file) => (
             <tr key={file.id} className="border-t border-slate-100 text-sm text-slate-600">
+              <td className="px-5 py-4 capitalize">{file.category}</td>
               <td className="px-5 py-4">{file.filename}</td>
               <td className="px-5 py-4">{file.extractionStatus}</td>
               <td className="px-5 py-4">{file.embeddingStatus}</td>

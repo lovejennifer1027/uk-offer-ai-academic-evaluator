@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
 import { ProjectCard } from "@/components/dashboard/project-card";
+import { resolveCurrentProject } from "@/lib/current-project";
 import { getLocale } from "@/lib/i18n";
 import { requireSessionUser } from "@/lib/session";
 import { listFilesByProject, listProjectsByUser, listReportsByProject } from "@/services/store/local-store";
@@ -47,7 +48,7 @@ export default async function DashboardOverviewPage() {
   );
   const fileCount = fileCounts.reduce((total, count) => total + count, 0);
   const reportCount = reportCounts.reduce((total, count) => total + count, 0);
-  const currentProject = projects[0] ?? null;
+  const currentProject = await resolveCurrentProject(projects);
   const currentProjectLatestReport = currentProject ? latestReportsByProject.get(currentProject.id) ?? null : null;
 
   return (

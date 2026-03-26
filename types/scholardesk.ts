@@ -14,6 +14,7 @@ export type AssignmentType =
   | "proposal"
   | "presentation";
 export type ProjectLanguage = "en" | "zh" | "bilingual";
+export type ProjectFileCategory = "essay" | "brief" | "notes" | "other";
 
 export interface LocalizedText {
   en: string;
@@ -75,6 +76,7 @@ export interface ProjectRecord {
 export interface UploadedFileRecord {
   id: string;
   projectId: string;
+  category: ProjectFileCategory;
   filename: string;
   mimeType: string;
   storagePath: string;
