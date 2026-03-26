@@ -252,8 +252,12 @@ function buildExamples({
   };
 }
 
-export default function AnalyzeBriefWorkspace() {
-  const [selectedSchool, setSelectedSchool] = useState("Bangor University");
+export default function AnalyzeBriefWorkspace({
+  initialSchool = "Bangor University"
+}: {
+  initialSchool?: string;
+}) {
+  const [selectedSchool, setSelectedSchool] = useState(initialSchool);
   const [selectedProject, setSelectedProject] = useState("3+1");
   const [selectedLevel, setSelectedLevel] = useState("Bachelor");
   const [assignmentPrompt, setAssignmentPrompt] = useState(

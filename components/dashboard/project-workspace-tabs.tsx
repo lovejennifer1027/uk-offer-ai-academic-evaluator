@@ -10,6 +10,8 @@ import { SourceCitationPanel } from "@/components/dashboard/source-citation-pane
 import type { ChatMessageRecord, EvaluationReportRecord, ProjectRecord, UploadedFileRecord } from "@/types/scholardesk";
 
 const tabs = ["Overview", "Files", "Rubric", "AI Chat", "Evaluation Report", "Citations", "Settings"] as const;
+const projectActionLinkClassName =
+  "inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]";
 
 export function ProjectWorkspaceTabs({
   project,
@@ -50,11 +52,22 @@ export function ProjectWorkspaceTabs({
               <p className="mt-4 text-sm leading-7 text-slate-600">
                 {project.school} · {project.programme} · {project.module} · {project.assignmentType} · {project.language}
               </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link href={`/dashboard/upload?project=${project.id}`} className={projectActionLinkClassName}>
+                  Upload
+                </Link>
+                <Link href={`/dashboard/analyze-brief?project=${project.id}`} className={projectActionLinkClassName}>
+                  Analyze Brief
+                </Link>
+                <Link href={`/dashboard/evaluate?project=${project.id}`} className={projectActionLinkClassName}>
+                  Evaluate
+                </Link>
+              </div>
             </div>
 
             <Link
               href={`/dashboard/evaluate?project=${project.id}`}
-              className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+              className={projectActionLinkClassName}
             >
               Open evaluate workspace
             </Link>
@@ -94,7 +107,7 @@ export function ProjectWorkspaceTabs({
             <div className="mt-5">
               <Link
                 href={`/dashboard/evaluate?project=${project.id}`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                className={projectActionLinkClassName}
               >
                 Run evaluation for this project
               </Link>
