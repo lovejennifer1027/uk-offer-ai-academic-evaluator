@@ -24,6 +24,7 @@ import { SourceCitationPanel } from "@/components/dashboard/source-citation-pane
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, wordCount } from "@/lib/utils";
@@ -653,20 +654,23 @@ export function EvaluationWorkspace({
   projectId,
   language,
   initialSchool,
+  initialProgramme,
   projectTitle,
   moduleCode
 }: {
   projectId: string;
   language: ProjectLanguage;
   initialSchool: string;
+  initialProgramme: string;
   projectTitle: string;
   moduleCode: string;
 }) {
   const [paperText, setPaperText] = useState("");
   const [rubricText, setRubricText] = useState("");
-  const [targetLevel, setTargetLevel] = useState("Master's");
+  const [targetLevel, setTargetLevel] = useState("Master");
   const [citationStyle, setCitationStyle] = useState<CitationStyle>("Harvard");
   const [selectedSchool, setSelectedSchool] = useState(initialSchool);
+  const [programme, setProgramme] = useState(initialProgramme);
   const [studyRoute, setStudyRoute] = useState<(typeof studyRouteOptions)[number]>("3+1");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -680,6 +684,8 @@ export function EvaluationWorkspace({
   const schoolProfile = resolveAcademicSchoolProfile(selectedSchool);
   const wordTotal = useMemo(() => wordCount(paperText), [paperText]);
   const overallScore = result?.overallScore ?? 72;
+  const isUploading = paperUploadState.status === "uploading" || rubricUploadState.status === "uploading";
+  const canEvaluate = Boolean(paperText.trim() && selectedSchool.trim() && programme.trim()) && !loading && !isUploading;
 
   const displayedScores = useMemo(() => {
     if (result) {
@@ -733,6 +739,7 @@ export function EvaluationWorkspace({
       return;
     }
 
+    setErrorMessage(null);
     const setState = slot === "paper" ? setPaperUploadState : setRubricUploadState;
     setState({
       status: "uploading",
@@ -788,6 +795,21 @@ export function EvaluationWorkspace({
   }
 
   async function handleSubmit() {
+    if (!paperText.trim()) {
+      setErrorMessage("请先粘贴论文正文，或上传论文文件后再开始评估。");
+      return;
+    }
+
+    if (!selectedSchool.trim()) {
+      setErrorMessage("请先选择学校。");
+      return;
+    }
+
+    if (!programme.trim()) {
+      setErrorMessage("请先确认 programme 信息。");
+      return;
+    }
+
     setLoading(true);
     setErrorMessage(null);
 
@@ -798,6 +820,7 @@ export function EvaluationWorkspace({
         body: JSON.stringify({
           projectId,
           school: schoolProfile.name,
+          programme: programme.trim(),
           studyRoute,
           paperText,
           rubricText,
@@ -807,14 +830,14 @@ export function EvaluationWorkspace({
         })
       });
 
-      const payload = (await response.json()) as {
+      const payload = (await response.json().catch(() => null)) as {
         overallScore?: number;
         jsonReport?: EvaluationReportJson;
         error?: string;
-      };
+      } | null;
 
-      if (!response.ok || !payload.jsonReport || typeof payload.overallScore !== "number") {
-        throw new Error(payload.error ?? "评估暂时无法完成，请检查输入后重试。");
+      if (!response.ok || !payload?.jsonReport || typeof payload.overallScore !== "number") {
+        throw new Error(payload?.error ?? "评估暂时无法完成，请检查输入后重试。");
       }
 
       setResult({
@@ -876,7 +899,7 @@ export function EvaluationWorkspace({
                 </div>
 
                 <div className="mt-4 space-y-3">
-                  <GuideStep number="1" text="先选择学校和路径，让系统匹配对应的评分标准。" delay={0.05} />
+                  <GuideStep number="1" text="先选择学校并确认 programme 上下文，让系统匹配对应的评分标准。" delay={0.05} />
                   <GuideStep number="2" text="粘贴论文正文，或者直接上传论文文件。" delay={0.12} />
                   <GuideStep number="3" text="上传 rubric、brief 或老师要求，作为评估依据。" delay={0.19} />
                   <GuideStep number="4" text="在右侧查看评分结果、重点问题和依据来源。" delay={0.26} />
@@ -891,7 +914,7 @@ export function EvaluationWorkspace({
               <CardHeading
                 icon={School}
                 title="评估设置"
-                description="学校、路径和学历层级会一起决定系统匹配的评估标准。"
+                description="学校、programme、路径和学历层级会一起决定系统匹配的评估标准。"
               />
               <div className="flex flex-1 flex-col justify-between space-y-4">
                 <div className="space-y-4">
@@ -904,6 +927,19 @@ export function EvaluationWorkspace({
                         </option>
                       ))}
                     </Select>
+                  </div>
+
+                  <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+                    <div className="mb-2 text-sm font-medium text-slate-900">Programme</div>
+                    <Input
+                      value={programme}
+                      onChange={(event) => setProgramme(event.target.value)}
+                      placeholder="例如 International Business / BUS702"
+                      className="h-11 rounded-2xl border-slate-200 bg-white shadow-sm"
+                    />
+                    <div className="mt-2 text-xs leading-5 text-slate-500">
+                      V1 暂时把 programme 作为当前项目 / module 上下文字段使用，不改数据库结构。
+                    </div>
                   </div>
 
                   <div className="rounded-[24px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
@@ -938,7 +974,7 @@ export function EvaluationWorkspace({
                 </div>
 
                 <div className="rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-600">
-                  当前系统会默认沿用项目的评估语言与引用规则进行分析，不再在这里重复显示额外参数。
+                  当前系统会沿用项目的评估语言与引用规则进行分析；programme 在 V1 中先作为当前项目 / module 的轻量映射字段使用。
                 </div>
               </div>
             </div>
@@ -1049,17 +1085,17 @@ export function EvaluationWorkspace({
 
                   <Button
                     onClick={handleSubmit}
-                    disabled={loading || !paperText.trim() || !selectedSchool.trim()}
+                    disabled={!canEvaluate}
                     className="group h-14 w-full rounded-[24px] bg-[linear-gradient(135deg,#111827_0%,#1f2937_100%)] px-6 text-base font-medium text-white shadow-[0_14px_30px_rgba(15,23,42,0.16)] hover:opacity-95"
                   >
                     <motion.span
-                      animate={loading ? { rotate: 360 } : { rotate: 0 }}
-                      transition={{ duration: 1, repeat: loading ? Number.POSITIVE_INFINITY : 0, ease: "linear" }}
+                      animate={loading || isUploading ? { rotate: 360 } : { rotate: 0 }}
+                      transition={{ duration: 1, repeat: loading || isUploading ? Number.POSITIVE_INFINITY : 0, ease: "linear" }}
                       className="mr-2 inline-flex"
                     >
                       <Activity className="h-4 w-4" />
                     </motion.span>
-                    {loading ? "正在刷新评估结果..." : "生成学校专属评估"}
+                    {isUploading ? "正在处理上传文件..." : loading ? "正在刷新评估结果..." : "生成学校专属评估"}
                   </Button>
 
                   {errorMessage ? (

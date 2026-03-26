@@ -9,6 +9,7 @@ import type { CitationStyle, ProjectLanguage } from "@/types/scholardesk";
 export async function generateEvaluationReport(input: {
   projectId: string;
   school: string;
+  programme?: string;
   studyRoute?: string;
   paperText: string;
   rubricText?: string;
@@ -19,13 +20,13 @@ export async function generateEvaluationReport(input: {
   const evidence = await retrieveEvaluationEvidence({
     projectId: input.projectId,
     school: input.school,
-    query: `${input.paperText}\n${input.rubricText ?? ""}`
+    query: `${input.programme ?? ""}\n${input.targetLevel}\n${input.paperText}\n${input.rubricText ?? ""}`
   });
 
   if (!process.env.OPENAI_API_KEY || process.env.ENABLE_DEMO_EVALUATION === "true") {
     const demo = {
       overallSummary:
-        `${input.school}${input.studyRoute ? `（${input.studyRoute}）` : ""} 相关资料显示，这份草稿已经具备基本结构和较稳的学术语气，但论证力度、证据解释和 rubric 对齐仍需要进一步强化。`,
+        `${input.school}${input.programme ? ` · ${input.programme}` : ""}${input.studyRoute ? `（${input.studyRoute}）` : ""} 相关资料显示，这份草稿已经具备基本结构和较稳的学术语气，但论证力度、证据解释和 rubric 对齐仍需要进一步强化。`,
       dimensionScores: {
         structure: 74,
         argument: 68,
@@ -85,6 +86,7 @@ export async function generateEvaluationReport(input: {
     input: buildEvaluationPrompt({
       paperText: input.paperText,
       school: input.school,
+      programme: input.programme,
       studyRoute: input.studyRoute,
       rubricText: input.rubricText,
       targetLevel: input.targetLevel,

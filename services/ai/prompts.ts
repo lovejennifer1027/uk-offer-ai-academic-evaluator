@@ -3,6 +3,7 @@ import type { CitationStyle, EvidenceSnippet, ProjectLanguage } from "@/types/sc
 export function buildEvaluationPrompt(input: {
   paperText: string;
   school: string;
+  programme?: string;
   studyRoute?: string;
   rubricText?: string;
   targetLevel: string;
@@ -19,6 +20,7 @@ Task:
 - use retrieved evidence only when relevant
 
 Selected school: ${input.school}
+Selected programme: ${input.programme?.trim() || "Use current project/module context"}
 Study route: ${input.studyRoute?.trim() || "Not specified"}
 Target level: ${input.targetLevel}
 Citation style: ${input.citationStyle}

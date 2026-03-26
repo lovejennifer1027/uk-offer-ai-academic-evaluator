@@ -26,6 +26,7 @@ const LegacyEvaluateRequestSchema = z.object({
 const DashboardEvaluateSchema = z.object({
   projectId: z.string().min(1),
   school: z.string().min(2),
+  programme: z.string().trim().min(2).max(160).optional(),
   studyRoute: z.string().trim().min(2).optional(),
   paperText: z.string().min(20),
   rubricText: z.string().optional(),
@@ -124,6 +125,7 @@ async function handleDashboardJson(request: Request) {
   const result = await generateEvaluationReport({
     projectId: project.id,
     school: payload.school,
+    programme: payload.programme?.trim() || project.module || project.title,
     studyRoute: payload.studyRoute,
     paperText: payload.paperText,
     rubricText: payload.rubricText,

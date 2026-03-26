@@ -24,6 +24,7 @@ export default async function DashboardEvaluatePage() {
       projectId={project.id}
       language={project.language}
       initialSchool={project.school}
+      initialProgramme={project.module || project.title}
       projectTitle={project.title}
       moduleCode={project.module}
     />
