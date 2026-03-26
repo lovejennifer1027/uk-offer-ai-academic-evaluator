@@ -4,11 +4,21 @@ import { Select } from "@/components/ui/select";
 import { CreateProjectForm } from "@/components/dashboard/create-project-form";
 import { ProjectCard } from "@/components/dashboard/project-card";
 import { requireSessionUser } from "@/lib/session";
-import { listProjectsByUser } from "@/services/store/local-store";
+import { listProjectsByUser, listReportsByProject } from "@/services/store/local-store";
 
 export default async function ProjectsPage() {
   const user = await requireSessionUser();
   const projects = await listProjectsByUser(user.id);
+  const latestReportsByProject = new Map(
+    (
+      await Promise.all(
+        projects.map(async (project) => {
+          const latestReport = (await listReportsByProject(project.id))[0] ?? null;
+          return [project.id, latestReport] as const;
+        })
+      )
+    )
+  );
 
   return (
     <div className="space-y-6">
@@ -50,7 +60,7 @@ export default async function ProjectsPage() {
           </Card>
         ) : (
           projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.id} project={project} latestReport={latestReportsByProject.get(project.id) ?? null} />
           ))
         )}
       </div>

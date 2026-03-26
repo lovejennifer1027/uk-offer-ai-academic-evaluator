@@ -12,6 +12,16 @@ export default async function DashboardOverviewPage() {
   const projects = await listProjectsByUser(user.id);
   const fileCounts = await Promise.all(projects.map((project) => listFilesByProject(project.id).then((files) => files.length)));
   const reportCounts = await Promise.all(projects.map((project) => listReportsByProject(project.id).then((reports) => reports.length)));
+  const latestReportsByProject = new Map(
+    (
+      await Promise.all(
+        projects.map(async (project) => {
+          const latestReport = (await listReportsByProject(project.id))[0] ?? null;
+          return [project.id, latestReport] as const;
+        })
+      )
+    )
+  );
   const fileCount = fileCounts.reduce((total, count) => total + count, 0);
   const reportCount = reportCounts.reduce((total, count) => total + count, 0);
   const currentProject = projects[0] ?? null;
@@ -49,7 +59,7 @@ export default async function DashboardOverviewPage() {
               </Card>
             ) : (
               projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
+                <ProjectCard key={project.id} project={project} latestReport={latestReportsByProject.get(project.id) ?? null} />
               ))
             )}
           </div>
