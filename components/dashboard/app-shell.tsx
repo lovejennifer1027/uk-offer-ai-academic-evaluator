@@ -1,5 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BarChart3, BookOpen, FileSearch, FolderKanban, LayoutDashboard, Search, Shield, UploadCloud } from "lucide-react";
 
 import { LogoutButton } from "@/components/auth/logout-button";
@@ -20,6 +23,24 @@ const sidebarItems = [
   { href: "/dashboard/appeal", label: { en: "Appeal Organizer", zh: "申诉整理" }, icon: Shield }
 ];
 
+const projectScopedRoutes = new Set(["/dashboard/upload", "/dashboard/evaluate", "/dashboard/analyze-brief"]);
+
+function resolveCurrentProjectId(pathname: string, searchParams: URLSearchParams) {
+  const queryProjectId = searchParams.get("project")?.trim();
+
+  if (queryProjectId) {
+    return queryProjectId;
+  }
+
+  const segments = pathname.split("/").filter(Boolean);
+
+  if (segments[0] === "dashboard" && segments[1] === "projects" && segments[2]) {
+    return segments[2];
+  }
+
+  return null;
+}
+
 export function AppShell({
   locale,
   title,
@@ -31,6 +52,10 @@ export function AppShell({
   userName: string;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentProjectId = resolveCurrentProjectId(pathname, searchParams);
+
   return (
     <div className="min-h-screen px-3 pb-3 pt-3 md:px-5">
       <div className="mx-auto flex min-h-screen w-full max-w-[1620px] flex-col gap-4">
@@ -69,18 +94,24 @@ export function AppShell({
               </div>
 
               <nav className="flex gap-2 overflow-x-auto pb-1">
-                {sidebarItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "inline-flex shrink-0 items-center gap-2 rounded-full border border-white/80 bg-white/86 px-4 py-2.5 text-sm font-medium text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:text-slate-950"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{locale === "en" ? item.label.en : item.label.zh}</span>
-                  </Link>
-                ))}
+                {sidebarItems.map((item) => {
+                  const href = currentProjectId && projectScopedRoutes.has(item.href)
+                    ? `${item.href}?project=${currentProjectId}`
+                    : item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={href}
+                      className={cn(
+                        "inline-flex shrink-0 items-center gap-2 rounded-full border border-white/80 bg-white/86 px-4 py-2.5 text-sm font-medium text-slate-600 shadow-[0_10px_24px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:text-slate-950"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{locale === "en" ? item.label.en : item.label.zh}</span>
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
           </div>
