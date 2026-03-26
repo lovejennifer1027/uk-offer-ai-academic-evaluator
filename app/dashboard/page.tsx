@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Card } from "@/components/ui/card";
 import { ProjectCard } from "@/components/dashboard/project-card";
 import { getLocale } from "@/lib/i18n";
@@ -12,6 +14,7 @@ export default async function DashboardOverviewPage() {
   const reportCounts = await Promise.all(projects.map((project) => listReportsByProject(project.id).then((reports) => reports.length)));
   const fileCount = fileCounts.reduce((total, count) => total + count, 0);
   const reportCount = reportCounts.reduce((total, count) => total + count, 0);
+  const currentProject = projects[0] ?? null;
 
   return (
     <div className="space-y-6">
@@ -54,11 +57,44 @@ export default async function DashboardOverviewPage() {
 
         <Card className="rounded-[30px]">
           <h2 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950">{locale === "en" ? "Quick actions" : "快捷操作"}</h2>
-          <div className="mt-6 space-y-3 text-sm text-slate-600">
-            <div>• {locale === "en" ? "Upload notes or briefs to your project knowledge base." : "把讲义、brief 或笔记上传到项目知识库。"}</div>
-            <div>• {locale === "en" ? "Run a structured paper evaluation." : "执行结构化论文评估。"}</div>
-            <div>• {locale === "en" ? "Format references and compare evidence in one place." : "在同一处整理引用并对照证据。"}</div>
-          </div>
+          {currentProject ? (
+            <div className="mt-6 space-y-5">
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
+                <div className="text-sm font-medium text-slate-500">{locale === "en" ? "Current project" : "当前项目"}</div>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{currentProject.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  {currentProject.school} · {currentProject.programme} · {currentProject.module}
+                </p>
+              </div>
+
+              <div className="grid gap-3">
+                <Link
+                  href={`/dashboard/upload?project=${currentProject.id}`}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-900/10 bg-[linear-gradient(135deg,#1f2a44_0%,#3b4e7a_55%,#6b74d6_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(59,78,122,0.24)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(59,78,122,0.28)]"
+                >
+                  {locale === "en" ? "Open Upload for current project" : "进入当前项目上传"}
+                </Link>
+                <Link
+                  href={`/dashboard/analyze-brief?project=${currentProject.id}`}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+                >
+                  {locale === "en" ? "Open Analyze Brief for current project" : "进入当前项目分析要求"}
+                </Link>
+                <Link
+                  href={`/dashboard/evaluate?project=${currentProject.id}`}
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_36px_rgba(15,23,42,0.08)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-slate-300"
+                >
+                  {locale === "en" ? "Open Evaluate for current project" : "进入当前项目评估"}
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-3 text-sm text-slate-600">
+              <div>• {locale === "en" ? "Create a project first to unlock project-aware actions." : "请先创建项目，再使用项目绑定的上传、分析和评估工作流。"}</div>
+              <div>• {locale === "en" ? "Upload notes or briefs to your project knowledge base." : "把讲义、brief 或笔记上传到项目知识库。"}</div>
+              <div>• {locale === "en" ? "Run a structured paper evaluation." : "执行结构化论文评估。"}</div>
+            </div>
+          )}
         </Card>
       </div>
     </div>
