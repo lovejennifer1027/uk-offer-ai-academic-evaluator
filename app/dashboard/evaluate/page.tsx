@@ -1,12 +1,19 @@
 import { EvaluationWorkspace } from "@/components/dashboard/evaluation-workspace";
 import { Card } from "@/components/ui/card";
 import { requireSessionUser } from "@/lib/session";
-import { listProjectsByUser } from "@/services/store/local-store";
+import { getProjectByIdForUser, listProjectsByUser } from "@/services/store/local-store";
 
-export default async function DashboardEvaluatePage() {
+export default async function DashboardEvaluatePage({
+  searchParams
+}: {
+  searchParams?: Promise<{ project?: string }>;
+}) {
   const user = await requireSessionUser();
   const projects = await listProjectsByUser(user.id);
-  const project = projects[0];
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const requestedProjectId = resolvedSearchParams?.project?.trim();
+  const requestedProject = requestedProjectId ? await getProjectByIdForUser(requestedProjectId, user.id) : null;
+  const project = requestedProject ?? projects[0];
 
   if (!project) {
     return (
